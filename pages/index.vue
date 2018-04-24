@@ -35,7 +35,7 @@
               </v-card-text>
               <v-card-actions>
                 <v-spacer></v-spacer>
-                <nuxt-link to="/carom"><v-btn color="primary">Login</v-btn></nuxt-link>
+                <nuxt-link to="/typepartie"><v-btn color="primary">Login</v-btn></nuxt-link>
               </v-card-actions>
             </v-card>
           </v-flex>
