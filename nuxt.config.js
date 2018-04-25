@@ -1,6 +1,7 @@
 const pkg = require('./package')
 
 const nodeExternals = require('webpack-node-externals')
+const path = require("path")
 
 module.exports = {
   mode: 'universal',
@@ -80,5 +81,7 @@ module.exports = {
         ]
       }
     }
-  }
+  },
+  rootDir: path.resolve(__dirname),
+  dev: process.env.NODE_ENV !== 'production'
 }
