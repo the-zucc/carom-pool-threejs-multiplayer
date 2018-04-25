@@ -23,6 +23,7 @@
     "@feathersjs/socketio": "^3.2.1",
     "compression": "^1.7.2",
     "cors": "^2.8.4",
+    "eslint-plugin-vue": "^4.5.0",
     "feathers-nedb": "^3.0.0",
     "helmet": "^3.12.0",
     "nedb": "^1.8.0",
@@ -32,9 +33,10 @@
     "winston": "^2.4.2"
   },
   "devDependencies": {
-    "cross-env": "^5.0.1",
     "babel-eslint": "^7.2.3",
+    "cross-env": "^5.0.1",
     "eslint": "^4.19.1",
+    "eslint-config-prettier": "^2.9.0",
     "eslint-config-standard": "^10.2.1",
     "eslint-loader": "^1.9.0",
     "eslint-plugin-html": "^3.1.1",
