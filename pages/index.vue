@@ -37,12 +37,12 @@
 <script>
   export default {
     layout: 'index-layout',
-    created() {
-      //comme le window.onload()
+    created () {
+      // comme le window.onload() mais pour le composant
     },
     methods: {
-      login() {
-        //la fonction de login
+      login () {
+        // la fonction de login
       }
     }
   }
