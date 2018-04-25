@@ -1,4 +1,11 @@
-
+<style scoped>
+  .tweakOpacity-enter-active, .tweakOpacity-leave-active {
+    transition: opacity .40s ease-out;
+  }
+  .tweakOpacity-enter, .tweakOpacity-leave-active {
+    opacity: 0;
+  }
+</style>
 <template>
   <v-layout>
     <v-flex xs12 sm4 class="pa-1">
@@ -18,7 +25,6 @@
       </v-card>
       </v-flex>
     </v-flex>
-
     <v-flex xs12 sm4 class="pa-1">
       <v-flex>
       <v-card>
@@ -55,5 +61,4 @@
       </v-flex>
     </v-flex>
   </v-layout>
-  
 </template>
