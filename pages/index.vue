@@ -4,19 +4,6 @@
       <v-card class="elevation-12">
         <v-toolbar dark color="primary">
           <v-toolbar-title>Login form</v-toolbar-title>
-          <v-spacer></v-spacer>
-          <v-tooltip bottom>
-            <v-btn icon large :href="source" target="_blank" slot="activator">
-              <v-icon large>code</v-icon>
-            </v-btn>
-            <span>Source</span>
-          </v-tooltip>
-          <v-tooltip right>
-            <v-btn icon large href="https://codepen.io/johnjleider/pen/wyYVVj" target="_blank" slot="activator">
-              <v-icon large>mdi-codepen</v-icon>
-            </v-btn>
-            <span>Codepen</span>
-          </v-tooltip>
         </v-toolbar>
         <v-card-text>
           <v-form>
