@@ -13,7 +13,9 @@
           </v-card-title>
           <v-card-actions >
              <v-flex xs12 text-xs-center>
-              <v-btn  :color="item.color">Sélectionner</v-btn>
+              
+                <nuxt-link :to="item.link"><v-btn :color="item.color">Sélectionner</v-btn></nuxt-link>
+              
              </v-flex>
           </v-card-actions>
         </v-card>
@@ -31,9 +33,9 @@
     data(){
       return ({
         items: [
-          { id:'1', titre: 'Carom Libre', desc:'1 Un des meilleur jeux au monde', color:'blue'},
-          { id:'2', titre: 'Carom 1 bande', desc:'2 Un des meilleur jeux au monde', color:'orange'},
-          { id:'3', titre: 'Carom 3 bandes', desc:'3 Un des meilleur jeux au monde', color:'green'}
+          { id:'1', titre: 'Carom Libre', desc:'1 Un des meilleur jeux au monde', color:'blue',  link:"/caromlibre"},
+          { id:'2', titre: 'Carom 1 bande', desc:'2 Un des meilleur jeux au monde', color:'orange', link:"/carom1bande"},
+          { id:'3', titre: 'Carom 3 bandes', desc:'3 Un des meilleur jeux au monde', color:'green', link:"/carom3bandes"}
         ]
       })
     } 
