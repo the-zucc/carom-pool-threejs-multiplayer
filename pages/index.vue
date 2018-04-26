@@ -13,9 +13,14 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
+          <nuxt-link to="/signup">
+            <v-btn color="secondary">Register</v-btn>
+          </nuxt-link>
+          <v-spacer></v-spacer>
           <nuxt-link to="/typepartie">
             <v-btn color="primary">Login</v-btn>
           </nuxt-link>
+          <v-spacer></v-spacer>
         </v-card-actions>
       </v-card>
     </v-flex>

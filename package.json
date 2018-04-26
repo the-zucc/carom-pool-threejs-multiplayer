@@ -24,6 +24,7 @@
     "@feathersjs/socketio": "^3.2.1",
     "@feathersjs/socketio-client": "^1.1.0",
     "compression": "^1.7.2",
+    "cookie-storage": "^3.1.0",
     "cors": "^2.8.4",
     "eslint-plugin-vue": "^4.5.0",
     "feathers-authentication-hooks": "^0.2.0",
@@ -36,6 +37,7 @@
     "nuxt": "^1.4.0",
     "serve-favicon": "^2.5.0",
     "socket.io-client": "^2.1.0",
+    "vuelidate": "^0.6.2",
     "vuetify": "^1.0.0",
     "winston": "^2.4.2"
   },
