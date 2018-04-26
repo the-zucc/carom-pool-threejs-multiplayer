@@ -1,16 +1,19 @@
-class GameView{
-	constructor(){
+import * as THREE from 'three';
+let OrbitControls = require('three-orbit-controls')(THREE);
+
+export default class GameView{
+	constructor(model){
 		this.scene = null; //Change
 		this.camera = null; //Change
 		this.renderer = null; //Change
 		this.table = null;
-		this.buildScene();			
+		this.buildScene(model);			
 	}
 
-	/********************************************************************************* 
+/********************************************************************************* 
 *   Init WebGL Scene
 *************************************************************************************/
-	buildScene(){	
+	buildScene(modele){	
 		// Creer une scene vide
 		this.scene = new THREE.Scene();		
 		let sceneWidth = window.innerWidth*0.85;
@@ -20,7 +23,7 @@ class GameView{
 		this.renderer = new THREE.WebGLRenderer({ antialias: true , alpha: true	});	
 		this.renderer.setClearColor("#fff", 0);
 		this.renderer.setSize(sceneWidth, sceneHeight);		
-		document.body.appendChild( this.renderer.domElement );
+		document.getElementById("carom-container").appendChild( this.renderer.domElement );
 
 		//Init Camera et lumieres
 		this.initCamera();
@@ -43,7 +46,7 @@ class GameView{
 		this.camera.lookAt(this.scene.position);  		
 		
 		//Controles
-		this.cameraControls = new THREE.OrbitControls( this.camera, this.renderer.domElement );
+		this.cameraControls = new OrbitControls( this.camera, this.renderer.domElement );
 		this.cameraControls.autoRotate = true;
 		this.cameraControls.autoRotateSpeed = 0.25;
 		this.cameraControls.enableZoom = true;

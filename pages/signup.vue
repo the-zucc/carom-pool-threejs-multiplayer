@@ -93,7 +93,6 @@
     methods: {
       submit () {
         this.$v.$touch()
-		this.$nuxt.$router.push("/");
       },
       clear () {
         this.$v.$reset()

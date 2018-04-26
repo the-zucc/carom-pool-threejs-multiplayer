@@ -13,9 +13,7 @@
           </v-card-title>
           <v-card-actions >
              <v-flex xs12 text-xs-center>
-              
                 <nuxt-link :to="item.link"><v-btn :color="item.color">Sélectionner</v-btn></nuxt-link>
-              
              </v-flex>
           </v-card-actions>
         </v-card>
@@ -23,7 +21,6 @@
     </v-flex>
   </v-layout>
 </template>
-
 <script>
   export default {
     transition (to, from) {
@@ -40,5 +37,4 @@
       })
     } 
   }
-
 </script>

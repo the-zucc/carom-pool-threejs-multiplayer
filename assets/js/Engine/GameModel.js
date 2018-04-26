@@ -1,4 +1,7 @@
-class GameModel{
+import Boule from '../Objects/Boule';
+import CaromTable from '../Objects/Table';
+
+export default class GameModel{
 	constructor(gameVariant){
 		this.variant = gameVariant;
 		this.joueurs = []

@@ -1,3 +1,5 @@
+import GameModel from './GameModel';
+import GameView from './GameView';
 /*********************************************************************
 * Variables
 *********************************************************************/
@@ -9,7 +11,7 @@ let table = null;
 *********************************************************************/
 function startGame(gameVariant){	
 	modele = new GameModel(gameVariant);
-	vue = new GameView();
+	vue = new GameView(modele);
 	startGameLoop();	
 }
 
@@ -20,4 +22,9 @@ function startGameLoop(){
 
 	//Callback function
 	requestAnimationFrame(startGameLoop)
+}
+
+export default {
+	startGame,
+	startGameLoop
 }

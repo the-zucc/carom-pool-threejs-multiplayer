@@ -1,4 +1,4 @@
-class Queue{
+export class Queue{
 	constructor(x,y,z,prop){
 		this.x = x;
 		this.y = y;

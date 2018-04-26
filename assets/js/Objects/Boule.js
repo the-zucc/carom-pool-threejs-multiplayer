@@ -1,4 +1,6 @@
-class Boule{
+import * as THREE from 'three'
+
+export default class Boule{
 	constructor(x,z,prop,coul){
 		this.x = x;		
 		this.z = z;

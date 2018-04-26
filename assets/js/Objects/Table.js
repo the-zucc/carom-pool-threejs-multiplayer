@@ -1,4 +1,6 @@
-class CaromTable{
+import * as THREE from 'three';
+
+export default class CaromTable{
 	constructor(x,y,z){
 		this.x = x;
 		this.y = y;
