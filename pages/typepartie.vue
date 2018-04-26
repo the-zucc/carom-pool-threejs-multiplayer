@@ -24,6 +24,10 @@
 
 <script>
   export default {
+    transition (to, from) {
+      if (!from) return 'slide-left';
+      if(to.query.page!=0) return to.query.page < from.query.page ? 'slide-right' : 'slide-left';
+    },
     data(){
       return ({
         items: [

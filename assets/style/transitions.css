@@ -1,7 +1,57 @@
 .page-enter-active, .page-leave-active {
   transition: all 0.2s ease-out;
 }
-.page-enter, .page-leave-active {
+.fade-enter-active, .page-leave-active {
+  transition: opacity .5s;
+}
+.fade-enter, .page-leave-to {
   opacity: 0;
-  transform-origin: 50% 50%;
+}
+
+.slide-left-enter-active {
+  animation: acrossInLeft .2s ease-out both;
+} 
+.slide-left-leave-active {
+  animation: acrossOutLeft .2s ease-out both;
+}
+
+@keyframes acrossInLeft {
+  0% {
+    transform: translate3d(100%, 0, 0);
+  }
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+}
+@keyframes acrossOutLeft {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(-100%, 0, 0);
+  }
+}
+
+.slide-right-enter-active {
+  animation: acrossInRight .2s ease-out both;
+} 
+.slide-right-leave-active {
+  animation: acrossOutRight .2s ease-out both;
+}
+
+@keyframes acrossInright {
+  0% {
+    transform: translate3d(-100%, 0, 0);
+  }
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+}
+@keyframes acrossOutRight {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(100%, 0, 0);
+  }
 }

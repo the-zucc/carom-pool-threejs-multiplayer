@@ -13,11 +13,11 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <nuxt-link to="/signup">
+          <nuxt-link to="/signup?page=2">
             <v-btn color="secondary">Register</v-btn>
           </nuxt-link>
           <v-spacer></v-spacer>
-          <nuxt-link to="/typepartie">
+          <nuxt-link to="/typepartie?page=2">
             <v-btn color="primary">Login</v-btn>
           </nuxt-link>
           <v-spacer></v-spacer>
@@ -28,6 +28,11 @@
 </template>
 <script>
   export default {
+    transition (to, from) {
+      if (!from) return 'slide-left';
+      if(to.query.page) return +to.query.page < +from.query.page ? 'slide-right' : 'slide-left';
+      else return 'slide-right';
+    },
     created () {
       // comme le window.onload() mais pour le composant
     },

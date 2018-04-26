@@ -34,8 +34,7 @@
       @blur="$v.checkbox.$touch()"
       required
     ></v-checkbox>
-
-    <v-btn @click="submit">submit</v-btn>
+	<v-btn @click="submit">submit</v-btn>
     <v-btn @click="clear">clear</v-btn>
   </form>
 </template>
@@ -52,6 +51,7 @@
       checkbox: { required }
     },
     data: () => ({
+	  success: false,
       name: '',
       email: '',
       select: null,
@@ -61,6 +61,7 @@
       ],
       checkbox: false
     }),
+	transition: 'fade',
     computed: {
       checkboxErrors () {
         const errors = []
@@ -92,6 +93,7 @@
     methods: {
       submit () {
         this.$v.$touch()
+		this.$nuxt.$router.push("/");
       },
       clear () {
         this.$v.$reset()
