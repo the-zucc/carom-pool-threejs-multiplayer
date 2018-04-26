@@ -13,14 +13,14 @@ export default class GameModel{
 	}	
 
 	initGame(){
-		this.table = new CaromTable(0,0,0);	
-		this.test = new Boule(20,9,"Joueur1TEMP",0xb6ccd7)
-		this.test2 = new Boule(10,9,"lololol",0xb6ccd7)
-		this.boules.push(this.test);
-		this.boules.push(this.test2)	
-		this.boules.push(new Boule(-10,-11,"Joueur1TEMP",0xe31919))
-		this.boules.push(new Boule(20,3,"Joueur1TEMP",0xe31919))
-		this.boules.push(new Boule(14,12,"Joueur1TEMP",0xe31919))
+		let couleurJoueur1 = 0xe6ac00;
+		let couleurJoueur2 = 0xffffcc;
+		let bouleNeutre = 0xe31919;
+
+		this.table = new CaromTable(0,0,0);				
+		this.boules.push(new Boule(-10,-11,"Joueur1TEMP",couleurJoueur1))
+		//this.boules.push(new Boule(20,3,"Neutral",bouleNeutre))
+		//this.boules.push(new Boule(14,12,"Joueur2TEMP",couleurJoueur2))
 	}
 
 	initCollisionBoxes(){
@@ -31,13 +31,12 @@ export default class GameModel{
 		this.collidableMeshList.push(this.table.bottomEdgeMesh)
 		this.collidableMeshList.push(this.table.topEdgeMesh)
 		this.collidableMeshList.push(this.table.leftEdgeMesh)
-		this.collidableMeshList.push(this.table.rightEdgeMesh)
-
+		this.collidableMeshList.push(this.table.rightEdgeMesh)		
 		
 		//Les boules
 		for (let i = 0; i < this.boules.length; i++) {
 			const element = this.boules[i];
-			this.collidableMeshList.push(element.model)
+			this.collidableMeshList.push(element.model)			
 		}
 		
 	}
@@ -47,15 +46,15 @@ export default class GameModel{
 		for (let i = 0; i < this.boules.length; i++) {
 			let lol = this.boules[i];
 			//Calcule les collisions
-			this.calculateCollisions(lol);
+			this.detectCollisions(lol);
 
 			//Update la position celon les resultats					
 			let delta = lol.direction.clone().multiply(lol.velocity)		
-			lol.model.position.add(delta);
+			lol.model.position.add(lol.velocity);
 		}			
 	}
 
-	calculateCollisions(node){
+	detectCollisions(node){
 		
 		let boule = node.model;
 		let originPoint = boule.position.clone();
@@ -75,10 +74,40 @@ export default class GameModel{
 			let collisionResults = ray.intersectObjects( this.collidableMeshList );
 			
 			//Si il y a des intersections, collision
-			if ( collisionResults.length > 0 && collisionResults[0].distance < directionVector.length() ) {
-				node.velocity.multiply(new THREE.Vector3(-1,0,0));				
-			}
-				
+			if ( collisionResults.length > 0 && collisionResults[0].distance < directionVector.length() && collisionResults[0].object.id != boule.id) {
+				console.log(collisionResults[0].distance , directionVector.length())
+				//console.log(collisionResults[0])
+				//this.calculateCollision()			
+			}				
 		}
+	}
+
+	calculateCollision(body1, body2){
+		/*//Trouver vecteur normalisé entre les deux corps
+		let n = body1.position.clone().sub(body2.position);
+		n.normalize();
+		// Find the length of the component of each of the movement
+		// vectors along n. 
+		// a1 = v1 . n
+		// a2 = v2 . n
+		let a1 = body1.velocity.dot(n);
+		let a2 = body2.velocity.dot(n);
+
+		// Using the optimized version, 
+		// optimizedP =  2(a1 - a2)
+		//              -----------
+		//                m1 + m2
+		float optimizedP = (2.0 * (a1 - a2)) / (circle1.mass + circle2.mass);
+
+		// Calculate v1', the new movement vector of circle1
+		// v1' = v1 - optimizedP * m2 * n
+		Vector v1' = v1 - optimizedP * circle2.mass * n;
+
+		// Calculate v1', the new movement vector of circle1
+		// v2' = v2 + optimizedP * m1 * n
+		Vector v2' = v2 + optimizedP * circle1.mass * n;
+
+		circle1.setMovementVector(v1');
+		circle2.setMovementVector(v2');*/
 	}
 }

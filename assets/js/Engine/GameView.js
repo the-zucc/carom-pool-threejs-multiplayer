@@ -16,8 +16,9 @@ export default class GameView{
 	buildScene(modele){	
 		// Creer une scene vide
 		this.scene = new THREE.Scene();		
-		let sceneWidth = window.innerWidth*0.85;
-		let sceneHeight = window.innerHeight*0.85;		
+		this.scene.add(new THREE.AxesHelper(500))
+		let sceneWidth = document.getElementById("carom-container").offsetWidth;
+		let sceneHeight = document.getElementById("carom-container").offsetHeight;		
 		
 		// Init le renderer 
 		this.renderer = new THREE.WebGLRenderer({ antialias: true , alpha: true	});	
@@ -39,7 +40,7 @@ export default class GameView{
 
 	initCamera(){
 		//Camera
-		this.camera = new THREE.PerspectiveCamera( 100, screen.width / screen.height  , 1, 10000 );    
+		this.camera = new THREE.PerspectiveCamera( 75, screen.width / screen.height  , 1, 10000 );    
 		this.camera.position.x = 0;
 		this.camera.position.y = 50;
 		this.camera.position.z = 0;			

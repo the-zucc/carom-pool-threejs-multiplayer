@@ -4,14 +4,14 @@ export default class Boule{
 	constructor(x,z,prop,coul){
 		this.x = x;		
 		this.z = z;
-		this.radius = 0.75;
+		this.radius = 0.85;
 		this.y = (this.radius*2)
 		this.proprietaire = prop;
 		this.couleur = coul;
 
 		//TEST TEST TEST
 		this.direction = new THREE.Vector3(1,0,0)
-		this.velocity = new THREE.Vector3(0.85,0,0)
+		this.velocity = new THREE.Vector3(0.25,0,0)
 		
 		this.createModel();
 	}	

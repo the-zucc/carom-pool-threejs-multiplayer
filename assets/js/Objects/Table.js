@@ -8,8 +8,9 @@ export default class CaromTable{
 		this.width = 80;
 		this.height = 2;
 		this.depth = 40;		
-		this.mainColor = 0x2d782d;
-		this.lineColor = 0x193c19;
+		this.surfaceColor = 0x2a6f2a; 
+		this.edgeColor = 0x2d782d;
+		this.lineColor = 0x235c23;
 		this.frameColor = 0x663300;
 		this.frameLineColor = 0x4d2600;
 
@@ -24,7 +25,8 @@ export default class CaromTable{
 	initGameSurface(){
 		//Surface de jeu		
 		let surfaceGeo = new THREE.BoxGeometry( this.width-0.01, this.height, this.depth-0.01 );
-		let surfaceMaterial = new THREE.MeshPhongMaterial( {color: this.mainColor} );
+		let surfaceMaterial = new THREE.MeshPhongMaterial( {color: this.surfaceColor} );
+		let edgeMaterial = new THREE.MeshPhongMaterial( {color: this.edgeColor} );
 		this.surface = new THREE.Mesh( surfaceGeo, surfaceMaterial );	
 		this.surface.position.y = -0.505;
 	
@@ -33,19 +35,19 @@ export default class CaromTable{
 		//LEFT,RIGHT ******************************************************************************
 		let sideEdgesGeo = new THREE.BoxGeometry( this.width+marginEdge, this.height/2, this.height/2 );		
 		
-		this.leftEdgeMesh =  new THREE.Mesh( sideEdgesGeo, surfaceMaterial );
+		this.leftEdgeMesh =  new THREE.Mesh( sideEdgesGeo, edgeMaterial );
 		this.leftEdgeMesh.position.set(0,this.height/2,this.depth/2+marginPos)		
 		
-		this.rightEdgeMesh =  new THREE.Mesh( sideEdgesGeo, surfaceMaterial );
+		this.rightEdgeMesh =  new THREE.Mesh( sideEdgesGeo, edgeMaterial );
 		this.rightEdgeMesh.position.set(0,this.height/2,-this.depth/2-marginPos)
 
 		//TOP,BOTTOM *******************************************************************************
 		let topEdgesGeo = new THREE.BoxGeometry( this.height/2, this.height/2, this.depth+marginEdge );		
 		
-		this.topEdgeMesh =  new THREE.Mesh( topEdgesGeo, surfaceMaterial );
+		this.topEdgeMesh =  new THREE.Mesh( topEdgesGeo, edgeMaterial );
 		this.topEdgeMesh.position.set(this.width/2+marginPos,this.height/2,0)	
 		
-		this.bottomEdgeMesh =  new THREE.Mesh( topEdgesGeo, surfaceMaterial );
+		this.bottomEdgeMesh =  new THREE.Mesh( topEdgesGeo, edgeMaterial );
 		this.bottomEdgeMesh.position.set(-this.width/2-marginPos,this.height/2,0)			
 
 		//LINES ************************************************************************************
@@ -72,9 +74,14 @@ export default class CaromTable{
 	}
 
 	initTableFrame(){
-		let frameMaterial = new THREE.MeshPhongMaterial( {color: this.frameColor} );
+		let frameMaterial = new THREE.MeshPhongMaterial( {color: this.frameColor, transparent:true, opacity:1} );
 		let marginPos = 1.51;
 		let marginEdge = 4.02;
+		//UNDER SURFACE
+		let surfaceGeo = new THREE.BoxGeometry( this.width+1, this.height, this.depth+1 );		
+		let surface = new THREE.Mesh( surfaceGeo, frameMaterial );	
+		surface.position.y = -2;
+
 		//LEFT,RIGHT ******************************************************************************
 		let sideEdgesGeo = new THREE.BoxGeometry( this.width+marginEdge, this.height*2.85, this.height/2 );	
 		let lowerSideEdgesGeo = new THREE.BoxGeometry( this.width+marginEdge, this.height, this.height/2 );		
@@ -108,22 +115,22 @@ export default class CaromTable{
 		lowerBottomEdgeMesh.position.set(-this.width/2-marginPos,-this.depth/4,0);	
 
 		//TABLE LEGS *******************************************************************************
-		let legMargin = this.height/4;
-		let legGeo = new THREE.BoxGeometry( this.height*2, this.depth/2 , this.height*2);	
+		let legMargin = this.height/2;
+		let legGeo = new THREE.BoxGeometry( this.height*2, this.depth/1.5 , this.height*2);	
 		let leg1 = new THREE.Mesh( legGeo, frameMaterial );	
-		leg1.position.set(this.width/2 , -this.depth/4 , this.depth/2-legMargin);	
+		leg1.position.set(this.width/2 - legMargin , -this.depth/3 , this.depth/2-legMargin);	
 
 		
 		let leg2 = new THREE.Mesh( legGeo, frameMaterial );	
-		leg2.position.set(-this.width/2 , -this.depth/4 ,this.depth/2-legMargin);	
+		leg2.position.set(-this.width/2 + legMargin , -this.depth/3 ,this.depth/2-legMargin);	
 
 
 		let leg3 = new THREE.Mesh( legGeo, frameMaterial );	
-		leg3.position.set(this.width/2,-this.depth/4,-this.depth/2);		
+		leg3.position.set(this.width/2 - legMargin,-this.depth/3,-this.depth/2 + legMargin);		
 
 
 		let leg4 = new THREE.Mesh( legGeo, frameMaterial );	
-		leg4.position.set(-this.width/2,-this.depth/4,-this.depth/2);
+		leg4.position.set(-this.width/2 + legMargin,-this.depth/3,-this.depth/2 + legMargin);
 
 
 		//LINES ************************************************************************************		
@@ -163,6 +170,7 @@ export default class CaromTable{
 		leg4.add(line12)
 
 		//Ajouts
+		this.model.add(surface)
 		this.model.add(leg1)
 		this.model.add(leg2)
 		this.model.add(leg3)
