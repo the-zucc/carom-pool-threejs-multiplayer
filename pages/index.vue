@@ -23,7 +23,6 @@
 </template>
 <script>
   export default {
-    layout: 'index-layout',
     created () {
       // comme le window.onload() mais pour le composant
     },

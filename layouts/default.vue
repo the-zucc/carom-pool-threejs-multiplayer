@@ -9,7 +9,7 @@
       </v-flex>
     </v-toolbar>
     <v-content>
-      <v-container>
+      <v-container >
         <nuxt />
       </v-container>
     </v-content>
