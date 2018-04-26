@@ -1,8 +1,7 @@
 import Vue from 'vue'; // eslint-disable-line import/no-extraneous-dependencies
 import Vuex from 'vuex'; // eslint-disable-line import/no-extraneous-dependencies
 import feathersVuex, { initAuth }  from 'feathers-vuex';
-import feathersClient from '@/api';
-import parseCookies from '@/utils/parse-cookies';
+import feathersClient from './feathers-client';
 
 const { service, auth } = feathersVuex(feathersClient, { idField: '_id' })
 
@@ -22,7 +21,8 @@ const store = new Vuex.Store({
     }
   },
   plugins: [
-    service('todos'),
+    service('parties'),
+    service('users'),
     auth({ userService: 'users' })
   ]
 })
