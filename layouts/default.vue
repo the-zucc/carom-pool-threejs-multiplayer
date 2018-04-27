@@ -1,15 +1,16 @@
 <template>
   <v-app dark>
-
-    <v-toolbar class="text-xs-center">
-      <v-flex>
-       <v-toolbar-title v-text="title">
-       </v-toolbar-title>
+    <v-navigation-drawer app fixed :clipped="$vuetify.breakpoint.lgAndUp" v-model="drawer"></v-navigation-drawer>
+    <v-toolbar app :clipped-left="$vuetify.breakpoint.lgAndUp" fixed color="primary" dark>
+      <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
        <i class="material-icons">bubble_chart</i>
-      </v-flex>
+       <v-toolbar-title v-text="title" class="white--text">
+       </v-toolbar-title>
+       <v-spacer></v-spacer>
+       <v-btn flat>Logout</v-btn>
     </v-toolbar>
     <v-content>
-      <v-container >
+      <v-container fluid fill-height>
         <nuxt />
       </v-container>
     </v-content>
