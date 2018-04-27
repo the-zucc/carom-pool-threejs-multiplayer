@@ -1,7 +1,6 @@
 <template>
-  <v-layout>
+  <v-layout row wrap>
     <v-flex xs12 sm4 class="pa-1" v-for="item in items" :key="item.id">
-      <v-flex>
         <v-card light raised>
           <v-card-media src="https://www.axonpost.com/wp-content/uploads/2018/02/billard-696x463.jpg" height="200px">
           </v-card-media>
@@ -17,7 +16,6 @@
              </v-flex>
           </v-card-actions>
         </v-card>
-      </v-flex>
     </v-flex>
   </v-layout>
 </template>
