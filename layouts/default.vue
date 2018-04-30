@@ -7,7 +7,7 @@
        <v-toolbar-title v-text="title" class="white--text">
        </v-toolbar-title>
        <v-spacer></v-spacer>
-       <v-btn flat>Logout</v-btn>
+       <v-btn flat v-if="this.$store.state.auth.payload" v-on:click="logout()">Logout</v-btn>
     </v-toolbar>
     <v-content>
       <v-container fluid fill-height>
@@ -21,20 +21,22 @@
 </template>
 
 <script>
-  export default {
-    data () {
-      return {
-        clipped: true,
-        drawer: true,
-        fixed: false,
-        items: [
-          { icon: 'apps', title: 'Welcome', to: '/' }
-        ],
-        miniVariant: false,
-        right: true,
-        rightDrawer: false,
-        title: 'CAROM-POOL'
-      }
-    }
+import { mapActions } from "vuex";
+export default {
+  data() {
+    return {
+      clipped: true,
+      drawer: true,
+      fixed: false,
+      items: [{ icon: "apps", title: "Welcome", to: "/" }],
+      miniVariant: false,
+      right: true,
+      rightDrawer: false,
+      title: "CAROM-POOL"
+    };
+  },
+  methods: {
+    ...mapActions('auth', ['logout'])
   }
+};
 </script>
