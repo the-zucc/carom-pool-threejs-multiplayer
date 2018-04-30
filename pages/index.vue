@@ -1,58 +1,38 @@
 <template>
-  <v-layout align-center justify-center>
-    <v-flex xs12 sm8 md4>
-      <v-card class="elevation-12">
-        <v-toolbar dark color="primary">
-          <v-toolbar-title>Login form</v-toolbar-title>
-        </v-toolbar>
-        <v-card-text>
-          <v-form>
-            <v-text-field prepend-icon="person" name="email" label="Email" type="text" v-model="email"></v-text-field>
-            <v-text-field prepend-icon="lock" name="password" label="Password" id="password" type="password" v-model="password"></v-text-field>
-          </v-form>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <nuxt-link to="/signup?page=2">
-            <v-btn color="secondary">Register</v-btn>
-          </nuxt-link>
-          <v-spacer></v-spacer>
-
-            <v-btn color="primary" v-on:click="login(email, password)">Login</v-btn>
-          <v-spacer></v-spacer>
-        </v-card-actions>
-      </v-card>
+  <v-layout row wrap>
+    <v-flex xs12 sm4 class="pa-1" v-for="item in items" :key="item.id">
+        <v-card light raised>
+          <v-card-media src="https://www.axonpost.com/wp-content/uploads/2018/02/billard-696x463.jpg" height="200px">
+          </v-card-media>
+          <v-card-title primary-title>
+            <v-flex xs12 text-xs-center>
+              <h3 class="headline">{{item.titre}}</h3>
+               <div xs12 text-xs-center>{{item.desc}}</div>
+            </v-flex>
+          </v-card-title>
+          <v-card-actions >
+             <v-flex xs12 text-xs-center>
+                <nuxt-link :to="item.link"><v-btn :color="item.color">Sélectionner</v-btn></nuxt-link>
+             </v-flex>
+          </v-card-actions>
+        </v-card>
     </v-flex>
   </v-layout>
 </template>
 <script>
-  import { mapActions } from "vuex"
-
   export default {
-    data () {
-      return {
-        email: undefined,
-        password: undefined,
-        error: undefined
-      }
+    transition (to, from) {
+      if (!from) return 'slide-left';
+      if(to.query.page!=0) return to.query.page < from.query.page ? 'slide-right' : 'slide-left';
     },
-    methods: {
-      login (email, password) {
-        this.authenticate({strategy: 'local', email, password})
-          .then(()=>{
-            this.$nuxt.$router.push("/typepartie");
-          })
-          .catch(error => {
-          // Convert the error to a plain object and add a message.
-            let type = error.className
-            error = Object.assign({}, error)
-            error.message = (type === 'not-authenticated')
-              ? 'Incorrect email or password.'
-              : 'An error prevented login.'
-            this.error = error
-        })
-      },
-      ...mapActions('auth', ['authenticate'])
-    }
+    data(){
+      return ({
+        items: [
+          { id:'1', titre: 'Carom Libre', desc:'1 Un des meilleur jeux au monde', color:'blue',  link:"/carom/libre"},
+          { id:'2', titre: 'Carom 1 bande', desc:'2 Un des meilleur jeux au monde', color:'orange', link:"/carom/1bande"},
+          { id:'3', titre: 'Carom 3 bandes', desc:'3 Un des meilleur jeux au monde', color:'green', link:"/carom/3bandes"}
+        ]
+      })
+    } 
   }
 </script>
