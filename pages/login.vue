@@ -40,7 +40,7 @@
       login (email, password) {
         this.authenticate({strategy: 'local', email, password})
           .then(()=>{
-            this.$nuxt.$router.push("/typepartie");
+            this.$router.push("/");
           })
           .catch(error => {
           // Convert the error to a plain object and add a message.

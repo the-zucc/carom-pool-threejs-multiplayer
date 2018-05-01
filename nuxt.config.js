@@ -83,5 +83,8 @@ module.exports = {
     }
   },
   rootDir: path.resolve(__dirname),
-  dev: process.env.NODE_ENV !== 'production'
+  dev: process.env.NODE_ENV !== 'production',
+  router: {
+    middleware: ['auth']
+  }
 }
