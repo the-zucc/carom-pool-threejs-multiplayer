@@ -8,11 +8,6 @@ import carom from 'assets/js/Carom.js';
 export default {
 	mounted () {
 		carom.demarrerPartie();
-	},
-	methods: {
-		start(){
-			// carom.demarrerPartie();
-		}
 	}
 }
 </script>

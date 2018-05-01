@@ -22,7 +22,20 @@
         </v-list-tile>
       </v-list>
 
-       <v-list class="pt-0" dense>
+       <v-list class="pt-0" dark>
+        <v-divider></v-divider>
+
+        <nuxt-link to="/" router-exact-active-class>
+        <v-list-tile>
+          <v-list-tile-action>
+            <v-icon>home</v-icon>
+          </v-list-tile-action>
+          <v-list-tile-content>
+            <v-list-tile-title>ACCUEIL</v-list-tile-title>
+          </v-list-tile-content>
+        </v-list-tile>
+        </nuxt-link>
+
         <v-divider></v-divider>
         <v-list-tile>
           <v-list-tile-action>
@@ -34,14 +47,26 @@
         </v-list-tile>
 
         <v-divider></v-divider>
-        <v-list-tile v-for="item in items" :key="item.title">
-          <v-list-tile-action>
-            <v-icon>{{ item.icon }}</v-icon>
-          </v-list-tile-action>
-          <v-list-tile-content>
-            <v-list-tile-title>{{ item.title }} : {{item.number}}</v-list-tile-title>
-          </v-list-tile-content>
-        </v-list-tile>
+
+        <v-list-group v-model="game.active" v-for="game in games"
+              :key="game.title" :prepend-icon="game.action" no-action >
+              <v-list-tile slot="activator">
+                <v-list-tile-content>
+                  <v>{{ game.title }}</v>
+                </v-list-tile-content>
+              </v-list-tile>
+              <v-list-tile v-for="subItem in game.stats" :key="subItem.title" @click="">
+                <v-list-tile-action>
+                  <v-icon>{{ subItem.icon }}</v-icon>
+                </v-list-tile-action>
+                <v-list-tile-content>
+                  <v-list-tile-title>{{ subItem.title }} : {{ subItem.number }}</v-list-tile-title>
+                </v-list-tile-content>
+              </v-list-tile>
+          </v-list-group>
+
+        <v-divider></v-divider>
+
       </v-list>
 
     </v-navigation-drawer>
@@ -72,9 +97,19 @@ export default {
       clipped: true,
       drawer: true,
       fixed: false,
-      items: [
-        { title: 'Nombre de coups', number : '10', icon: 'bubble_chart' },
-        { title: 'Nombre de carom', number : '1', icon: 'timeline' }
+      stats: [
+        { title: '-Nombre de coups', number : '10', icon: 'bubble_chart' },
+        { title: '-Nombre de carom', number : '1', icon: 'timeline' }
+      ],
+      games: [
+        {
+          action: 'local_activity',
+          title: 'Partie 1',
+          stats: [
+            { title: 'Nombre de coups', number : '10', icon: 'bubble_chart' },
+            { title: 'Nombre de carom', number : '1', icon: 'timeline' }
+          ]
+        },
       ],
       miniVariant: false,
       right: true,
