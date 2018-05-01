@@ -3,30 +3,41 @@ import GameView from './GameView';
 /*********************************************************************
 * Variables
 *********************************************************************/
-let modele = null;
-let vue = null;
-let table = null;
+let controller = null;
 /*********************************************************************
 * Initialisation de la page
 *********************************************************************/
-function startGame(gameVariant){	
-	modele = new GameModel(gameVariant);
-	vue = new GameView(modele);
+function startGame(gameVariant,me,playerList){		
+	let playerListTMP = '{"joueurs":[{"nom":"JM Deschamps","score":"420" },{"nom":"Pye Pwol","score":"1337"}]}';
+	let Json = JSON.parse(playerListTMP);	
+	controller = new Controller("TEST",gameVariant,Json);	
 	startGameLoop();	
 }
 
 function startGameLoop(){
-	let tmp = performance.now()
+	//let tmp = performance.now()
 
-	//Update game	
-	modele.update()
-	vue.renderScene()
-
+	controller.tick();
 	//Callback function
 	requestAnimationFrame(startGameLoop)
 
-	console.log("This thicc took "+(performance.now() - tmp)+" [B]illiseconds ")
+	//console.log("This thicc took "+(performance.now() - tmp)+" [B]illiseconds ")
 }
+
+class Controller{
+	constructor(me,gameVariant,playerList){	
+		console	
+		this.modele = new GameModel(this,gameVariant,playerList);
+		this.vue = new GameView(this);
+	}
+
+	tick(){
+		//Update game	
+		this.modele.update()
+		this.vue.renderScene()
+	}
+}
+
 
 export default {
 	startGame,

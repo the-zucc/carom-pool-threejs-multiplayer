@@ -2,12 +2,14 @@ import * as THREE from 'three';
 let OrbitControls = require('three-orbit-controls')(THREE);
 
 export default class GameView{
-	constructor(model,c){
+	constructor(controller){
+		this.controller = controller;
 		this.scene = null; //Change
 		this.camera = null; //Change
 		this.renderer = null; //Change
 		this.table = null;
-		this.buildScene(model);			
+
+		this.buildScene(this.controller.modele);			
 	}
 
 /********************************************************************************* 

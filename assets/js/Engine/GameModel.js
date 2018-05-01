@@ -1,27 +1,55 @@
 import Boule from '../Objects/Boule';
 import CaromTable from '../Objects/Table';
+import Joueur from'../Objects/Joueur';
 import * as THREE from 'three';
 
 export default class GameModel{
-	constructor(gamevariant){
+	constructor(controller,gamevariant,playerList){		
+		this.controller = controller;
 		this.vue = null;
 		this.variant = gamevariant;
 		this.joueurs = []
 		this.boules = []
 		
-		this.initGame()	
+		this.initGame(playerList)	
 		this.initCollisionBoxes();
 	}	
 
-	initGame(){
-		let couleurJoueur1 = 0xe6ac00;
-		let couleurJoueur2 = 0xffffcc;
+	initGame(playerList){
 		let bouleNeutre = 0xe31919;
+		let nbBoulesNeutres = 1;
 
-		this.table = new CaromTable(0,0,0);				
-		this.boules.push(new Boule(-10,-11,"Joueur1TEMP",couleurJoueur1))
-		this.boules.push(new Boule(20,3,"Neutral",bouleNeutre))
-		this.boules.push(new Boule(14,12,"Joueur2TEMP",couleurJoueur2))
+		//Init table et boule neutre
+		this.table = new CaromTable(0,0,0);	
+		this.boules.push(new Boule(25,0,"Neutre",bouleNeutre));		
+				
+		//Init players
+		for(let i = 0; i<2; i++) {
+			const actuel = playerList.joueurs[i];			
+			let couleur = null;
+			let position = null;
+
+			if(i == 0){
+				couleur = 0xe6ac00;
+				position = [-20,0];
+			}
+			else{
+				couleur = 0xffffcc;
+				position = [-20,5];
+			}
+
+			this.joueurs.push(new Joueur(actuel.nom,actuel.score,couleur,position));
+			this.boules.push(this.joueurs[i].boule)
+		}
+
+		
+		/*  //-----BALLES ADDITIONNELLES POUR TEST DE COLLISIONS-----
+		for(let i = 0; i < nbBoulesNeutres; i++){
+			let x = Math.floor(Math.random()*20 -10);
+			let z = Math.floor(Math.random()*40 -20);
+			this.boules.push(new Boule(x,z,"1",bouleNeutre))
+		}
+		*/		
 	}
 
 	initCollisionBoxes(){
@@ -38,47 +66,51 @@ export default class GameModel{
 		for (let i = 0; i < this.boules.length; i++) {
 			const element = this.boules[i];
 			this.collidableMeshList.push(element.model)			
-		}
-		
+		}		
 	}
 
 	update(){		
+		//Statio
+		let stationary = new THREE.Vector3(0,0,0);
+
 		//Update le mouvement de chaque boule
 		for (let i = 0; i < this.boules.length; i++) {
-			let lol = this.boules[i];
-			//Calcule les collisions
-			this.detectCollisions(lol);
+			const currentBall = this.boules[i];			
+			//Si la boule n'est pas stationaire
+			if(!currentBall.velocity.equals(stationary)){
+				//Calcule les collisions
+				this.detectCollisions(currentBall);
 
-			//Update la position celon les resultats			
-			lol.model.position.add(lol.velocity);
+				//Update la position celon les resultats			
+				currentBall.model.position.add(currentBall.velocity);
+			}
 		}			
 	}
 
-	detectCollisions(node){
-		
-		let boule = node.model;
+	detectCollisions(objetJeu){		
+		let boule = objetJeu.model;
 		let originPoint = boule.position.clone();
+		let hasCollided = false; //Arrete la boucle si il y a une collision
 
 		//Passe à travers tout les vertex du mesh
-		for (let vertexIndex = 0; vertexIndex < boule.geometry.vertices.length; vertexIndex++)
+		for (let vertexIndex = 0; vertexIndex < boule.geometry.vertices.length && !hasCollided  ; vertexIndex++)
 		{		
 			//Clone le vertex actuel
 			let localVertex = boule.geometry.vertices[vertexIndex].clone();
-			//Applique le quat du mesh
+			//Applique la matrice du model sur le vertex
 			let globalVertex = localVertex.applyMatrix4( boule.matrix );
-			//Subtract la direction du vertex
+			//Subtract la position du model (le offset)
 			let directionVector = globalVertex.sub( boule.position );
 			
-			let ray = new THREE.Raycaster( originPoint, directionVector.clone().normalize() );
 			//RayCast entre le point d'origin et le vecteur de direction
+			let ray = new THREE.Raycaster( originPoint, directionVector.clone().normalize() );			
 			let collisionResults = ray.intersectObjects( this.collidableMeshList );
 			
-			//Si il y a des intersections, collision
-			if ( !node.justCollided && collisionResults.length > 0 && collisionResults[0].distance < node.radius) {
-				let collidedWith = collisionResults[0].object;
-				node.justCollided = true;
-				setTimeout(()=>{node.justCollided = false},20); //REMOVE THIS
-				this.calculateCollision(node,collidedWith);					
+			//Si il y a des intersections, collisions
+			if (collisionResults.length > 0 && collisionResults[0].distance < node.radius) {
+				let collidedWith = collisionResults[0].object;											
+				hasCollided = true;
+				this.calculateCollision(node,collidedWith);		
 			}				
 		}
 	}
@@ -90,29 +122,28 @@ export default class GameModel{
 		if(body2.name.includes("Edge")){
 			let angle = null;
 			let newVelocity = null;
-			let axis = null;
-			
+			let axis = null;			
 			if(body2.name.includes("Left") || body2.name.includes("Right")){
 				axis = new THREE.Vector3(1,0,0);
-				angle = body1.velocity.clone().angleTo(axis);				
-						
+				angle = body1.velocity.clone().angleTo(axis);	
 			}		
 			else if(body2.name.includes("Top") || body2.name.includes("Bottom")){
 				axis = new THREE.Vector3(0,0,1)
 				angle = body1.velocity.clone().angleTo(axis);				
 			}
+
 			//Reflection angulaire
 			newVelocity = body1.velocity.clone().reflect(axis);
 			//Inverser la reflexion
 			newVelocity.multiplyScalar(-1);	
 			//Appliquer nouvelle direction	
-			body1.velocity = newVelocity; 
+			body1.velocity = newVelocity; 			
 		}
 		/*
 		* BOULE -> BOULE 
 		*********************************************************************/
 		else{
-
+			let n 
 		}
 			
 		
