@@ -1,8 +1,8 @@
 <template>
   <v-app dark>
-    <v-navigation-drawer app fixed :clipped="$vuetify.breakpoint.lgAndUp" v-model="drawer"></v-navigation-drawer>
+    <v-navigation-drawer v-if="this.$store.state.auth.payload" app fixed :clipped="$vuetify.breakpoint.lgAndUp" v-model="drawer"></v-navigation-drawer>
     <v-toolbar app :clipped-left="$vuetify.breakpoint.lgAndUp" fixed color="primary" dark>
-      <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
+      <v-toolbar-side-icon v-if="this.$store.state.auth.payload" @click.stop="drawer = !drawer"></v-toolbar-side-icon>
        <i class="material-icons">bubble_chart</i>
        <v-toolbar-title v-text="title" class="white--text">
        </v-toolbar-title>
