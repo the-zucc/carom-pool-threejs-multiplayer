@@ -54,6 +54,7 @@
           this.register = true;
       },
       submit () {
+        /*
         if(this.email == "" || this.nom == "" || this.password.length == "" || this.password2.length == "")
           this.error = true;
         else if(this.password != this.password2)
@@ -65,7 +66,7 @@
           this.register = false;
           this.registered = true;
         }
-          
+        */
       }
       ,
       login (email, password) {

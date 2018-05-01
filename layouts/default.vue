@@ -1,6 +1,6 @@
 <template>
   <v-app dark>
-    <v-navigation-drawer v-if="this.$store.state.auth.payload" app fixed :clipped="$vuetify.breakpoint.lgAndUp" v-model="drawer">
+    <v-navigation-drawer dark color="primary" v-if="this.$store.state.auth.payload" app fixed :clipped="$vuetify.breakpoint.lgAndUp" v-model="drawer">
         <v-list class="pa-1">
         <v-list-tile v-if="mini" @click.stop="mini = !mini">
           <v-list-tile-action>
@@ -54,7 +54,7 @@
        <v-btn flat v-if="this.$store.state.auth.payload" v-on:click="logoutAndBackHome()">Logout</v-btn>
     </v-toolbar>
     <v-content>
-      <v-container fluid fill-height>
+      <v-container color="primary" fluid fill-height>
         <nuxt />
       </v-container>
     </v-content>
@@ -79,7 +79,7 @@ export default {
       miniVariant: false,
       right: true,
       rightDrawer: false,
-      title: "CAROM-POOL"
+      title: "Billard Carom"
     };
   },
   methods: {

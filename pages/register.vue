@@ -19,7 +19,6 @@
             <v-btn color="secondary">Register</v-btn>
           </nuxt-link>
           <v-spacer></v-spacer>
-
             <v-btn color="primary" v-on:click="login(email, password)">Login</v-btn>
           <v-spacer></v-spacer>
         </v-card-actions>
