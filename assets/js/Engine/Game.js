@@ -16,15 +16,16 @@ function startGame(gameVariant){
 }
 
 function startGameLoop(){
-	//let tmp = performance.now()
-	//Update game
+	let tmp = performance.now()
+
+	//Update game	
 	modele.update()
 	vue.renderScene()
 
 	//Callback function
 	requestAnimationFrame(startGameLoop)
 
-	//console.log("This thicc took "+(performance.now() - tmp)+" [B]illiseconds ")
+	console.log("This thicc took "+(performance.now() - tmp)+" [B]illiseconds ")
 }
 
 export default {

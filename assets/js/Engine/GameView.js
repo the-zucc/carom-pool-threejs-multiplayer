@@ -2,7 +2,7 @@ import * as THREE from 'three';
 let OrbitControls = require('three-orbit-controls')(THREE);
 
 export default class GameView{
-	constructor(model){
+	constructor(model,c){
 		this.scene = null; //Change
 		this.camera = null; //Change
 		this.renderer = null; //Change
@@ -15,8 +15,7 @@ export default class GameView{
 *************************************************************************************/
 	buildScene(modele){	
 		// Creer une scene vide
-		this.scene = new THREE.Scene();		
-		this.scene.add(new THREE.AxesHelper(500))
+		this.scene = new THREE.Scene();				
 		let sceneWidth = document.getElementById("carom-container").offsetWidth;
 		let sceneHeight = document.getElementById("carom-container").offsetHeight;		
 		
