@@ -15,6 +15,7 @@ export default class CaromTable{
 		this.frameLineColor = 0x4d2600;
 
 		this.model = new THREE.Object3D();
+		this.model.name = "Table Model"	
 		this.model.position.set(this.x,this.y,this.z)	
 
 		this.initGameSurface();	
@@ -35,20 +36,30 @@ export default class CaromTable{
 		//LEFT,RIGHT ******************************************************************************
 		let sideEdgesGeo = new THREE.BoxGeometry( this.width+marginEdge, this.height/2, this.height/2 );		
 		
-		this.leftEdgeMesh =  new THREE.Mesh( sideEdgesGeo, edgeMaterial );
-		this.leftEdgeMesh.position.set(0,this.height/2,this.depth/2+marginPos)		
+		let leftEdgeMesh =  new THREE.Mesh( sideEdgesGeo, edgeMaterial );
+		leftEdgeMesh.name = "Left Edge";
+		leftEdgeMesh.position.set(0,this.height/2,this.depth/2+marginPos)		
 		
-		this.rightEdgeMesh =  new THREE.Mesh( sideEdgesGeo, edgeMaterial );
-		this.rightEdgeMesh.position.set(0,this.height/2,-this.depth/2-marginPos)
+		let rightEdgeMesh =  new THREE.Mesh( sideEdgesGeo, edgeMaterial );
+		rightEdgeMesh.name = "Right Edge";
+		rightEdgeMesh.position.set(0,this.height/2,-this.depth/2-marginPos);
+		
+		this.rightEdge = new Edge(rightEdgeMesh,new THREE.Vector3(0,0,1));
+		this.leftEdge = new Edge(leftEdgeMesh,new THREE.Vector3(0,0,1));
 
 		//TOP,BOTTOM *******************************************************************************
 		let topEdgesGeo = new THREE.BoxGeometry( this.height/2, this.height/2, this.depth+marginEdge );		
 		
-		this.topEdgeMesh =  new THREE.Mesh( topEdgesGeo, edgeMaterial );
-		this.topEdgeMesh.position.set(this.width/2+marginPos,this.height/2,0)	
+		let topEdgeMesh =  new THREE.Mesh( topEdgesGeo, edgeMaterial );
+		topEdgeMesh.name = "Top Edge";
+		topEdgeMesh.position.set(this.width/2+marginPos,this.height/2,0)	
 		
-		this.bottomEdgeMesh =  new THREE.Mesh( topEdgesGeo, edgeMaterial );
-		this.bottomEdgeMesh.position.set(-this.width/2-marginPos,this.height/2,0)			
+		let bottomEdgeMesh =  new THREE.Mesh( topEdgesGeo, edgeMaterial );
+		bottomEdgeMesh.name = "Bottom Edge";
+		bottomEdgeMesh.position.set(-this.width/2-marginPos,this.height/2,0)			
+
+		this.topEdge = new Edge(topEdgeMesh,new THREE.Vector3(1,0,0));
+		this.bottomEdge = new Edge(bottomEdgeMesh,new THREE.Vector3(1,0,0));
 
 		//LINES ************************************************************************************
 		let surfaceLine = new THREE.EdgesGeometry( surfaceGeo );
@@ -60,17 +71,17 @@ export default class CaromTable{
 		let line3 = new THREE.LineSegments( sideLines, new THREE.LineBasicMaterial( { color: this.lineColor } ) );
 		let line4 = new THREE.LineSegments( sideLines, new THREE.LineBasicMaterial( { color: this.lineColor } ) );
 		this.surface.add(line0)
-		this.topEdgeMesh.add(line1);
-		this.bottomEdgeMesh.add(line2);
-		this.leftEdgeMesh.add(line3);
-		this.rightEdgeMesh.add(line4);
+		topEdgeMesh.add(line1);
+		bottomEdgeMesh.add(line2);
+		leftEdgeMesh.add(line3);
+		rightEdgeMesh.add(line4);
 
 		//Ajouts
 		this.model.add(this.surface)
-		this.model.add(this.leftEdgeMesh)
-		this.model.add(this.rightEdgeMesh)	
-		this.model.add(this.topEdgeMesh)	
-		this.model.add(this.bottomEdgeMesh)			
+		this.model.add(leftEdgeMesh)
+		this.model.add(rightEdgeMesh)	
+		this.model.add(topEdgeMesh)	
+		this.model.add(bottomEdgeMesh)			
 	}
 
 	initTableFrame(){
@@ -183,5 +194,12 @@ export default class CaromTable{
 		this.model.add(lowerRightEdgeMesh)	
 		this.model.add(lowerTopEdgeMesh)	
 		this.model.add(lowerBottomEdgeMesh)	
+	}
+}
+
+class Edge{
+	constructor(model,orientation){
+		this.model = model;
+		this.direction = orientation;
 	}
 }

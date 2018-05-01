@@ -4,6 +4,7 @@ import * as THREE from 'three';
 
 export default class GameModel{
 	constructor(gamevariant){
+		this.vue = null;
 		this.variant = gamevariant;
 		this.joueurs = []
 		this.boules = []
@@ -19,8 +20,8 @@ export default class GameModel{
 
 		this.table = new CaromTable(0,0,0);				
 		this.boules.push(new Boule(-10,-11,"Joueur1TEMP",couleurJoueur1))
-		//this.boules.push(new Boule(20,3,"Neutral",bouleNeutre))
-		//this.boules.push(new Boule(14,12,"Joueur2TEMP",couleurJoueur2))
+		this.boules.push(new Boule(20,3,"Neutral",bouleNeutre))
+		this.boules.push(new Boule(14,12,"Joueur2TEMP",couleurJoueur2))
 	}
 
 	initCollisionBoxes(){
@@ -28,10 +29,10 @@ export default class GameModel{
 		this.collidableMeshList = []
 
 		//Les bords de la table
-		this.collidableMeshList.push(this.table.bottomEdgeMesh)
-		this.collidableMeshList.push(this.table.topEdgeMesh)
-		this.collidableMeshList.push(this.table.leftEdgeMesh)
-		this.collidableMeshList.push(this.table.rightEdgeMesh)		
+		this.collidableMeshList.push(this.table.bottomEdge.model)
+		this.collidableMeshList.push(this.table.topEdge.model)
+		this.collidableMeshList.push(this.table.leftEdge.model)
+		this.collidableMeshList.push(this.table.rightEdge.model)		
 		
 		//Les boules
 		for (let i = 0; i < this.boules.length; i++) {
@@ -48,8 +49,7 @@ export default class GameModel{
 			//Calcule les collisions
 			this.detectCollisions(lol);
 
-			//Update la position celon les resultats					
-			let delta = lol.direction.clone().multiply(lol.velocity)		
+			//Update la position celon les resultats			
 			lol.model.position.add(lol.velocity);
 		}			
 	}
@@ -74,15 +74,49 @@ export default class GameModel{
 			let collisionResults = ray.intersectObjects( this.collidableMeshList );
 			
 			//Si il y a des intersections, collision
-			if ( collisionResults.length > 0 && collisionResults[0].distance < directionVector.length() && collisionResults[0].object.id != boule.id) {
-				console.log(collisionResults[0].distance , directionVector.length())
-				//console.log(collisionResults[0])
-				//this.calculateCollision()			
+			if ( !node.justCollided && collisionResults.length > 0 && collisionResults[0].distance < node.radius) {
+				let collidedWith = collisionResults[0].object;
+				node.justCollided = true;
+				setTimeout(()=>{node.justCollided = false},20); //REMOVE THIS
+				this.calculateCollision(node,collidedWith);					
 			}				
 		}
 	}
+	
+	calculateCollision(body1, body2){		
+		/*
+		* BOULE -> MUR 
+		*********************************************************************/
+		if(body2.name.includes("Edge")){
+			let angle = null;
+			let newVelocity = null;
+			let axis = null;
+			
+			if(body2.name.includes("Left") || body2.name.includes("Right")){
+				axis = new THREE.Vector3(1,0,0);
+				angle = body1.velocity.clone().angleTo(axis);				
+						
+			}		
+			else if(body2.name.includes("Top") || body2.name.includes("Bottom")){
+				axis = new THREE.Vector3(0,0,1)
+				angle = body1.velocity.clone().angleTo(axis);				
+			}
+			//Reflection angulaire
+			newVelocity = body1.velocity.clone().reflect(axis);
+			//Inverser la reflexion
+			newVelocity.multiplyScalar(-1);	
+			//Appliquer nouvelle direction	
+			body1.velocity = newVelocity; 
+		}
+		/*
+		* BOULE -> BOULE 
+		*********************************************************************/
+		else{
 
-	calculateCollision(body1, body2){
+		}
+			
+		
+
 		/*//Trouver vecteur normalisé entre les deux corps
 		let n = body1.position.clone().sub(body2.position);
 		n.normalize();
