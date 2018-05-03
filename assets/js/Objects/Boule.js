@@ -5,9 +5,10 @@ export default class Boule{
 		this.x = x;		
 		this.z = z;
 		this.radius = 1;
-		this.y = (this.radius*1.75)
+		this.y = (this.radius*1.5);
 		this.proprietaire = prop;
 		this.couleur = coul;	
+		this.mass = 1;
 
 		//TEST TEST TEST		
 		this.velocity = new THREE.Vector3(0,0,0)//(Math.random(),0,Math.random());
