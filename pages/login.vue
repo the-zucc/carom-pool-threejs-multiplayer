@@ -26,66 +26,55 @@
           <v-spacer></v-spacer>
         </v-card-actions>
         <v-alert type="error" :value="error">{{errormsg}}</v-alert>
-        <v-alert type="success" :value="registered">Votre compte est crée ! Log in</v-alert>
       </v-card>
     </v-flex>
-       <v-snackbar :timeout="3000" top v-model="snackbar">Les champs sont vides
-         <v-btn flat color="primary" @click.native="snackbar = false">Close</v-btn>
-      </v-snackbar>
   </v-layout>
 </template>
 <script>
 import { mapActions } from "vuex";
 
-  export default {
-    data () {
-      return {
-        email: "",
-        nom: "",
-        password: "",
-        password2: "",
-        error: false,
-        errormsg: undefined,
-        register:false,
-        registered:false,
-        snackbar:false
-      }
+export default {
+  data() {
+    return {
+      email: "",
+      nom: "",
+      password: "",
+      password2: "",
+      error: false,
+      errormsg: undefined,
+      register: false,
+      snackbar: false
+    };
+  },
+  methods: {
+    toggleRegister() {
+      (this.register)? this.register = false :  this.register = true;
     },
-    methods: {
-      toggleRegister () {
-        if(this.register)
-          this.register = false;
-        else{
-          this.register = true;
-        }
-      },
-      submit () {
-        if(this.register){
-          if(this.email == "" || this.nom == "" || this.password.length == "" || this.password2.length == ""){
-            this.errormsg = "Un ou plusieurs champs sont vides !"
-            this.error = true;
-            setTimeout(function(){ this.error = false; }.bind(this), 3000);
-          } 
-          else if(this.password != this.password2){
-            this.error = true;
-            this.errormsg = "Vos mots de passe sont différents !"
-            setTimeout(function(){ this.error = false; }.bind(this), 3000);
-          }
-          else
-            this.error = false;
+    submit(email, password, name) {
+      if (this.register) {
+        if (this.email == "" ||this.nom == "" ||this.password.length == "" ||this.password2.length == "") {
+          this.errormsg = "Un ou plusieurs champs sont vides !";
+          this.error = true;
+          setTimeout(
+            function() {
+              this.error = false;
+            }.bind(this),
+            3000
+          );
+        } else if (this.password != this.password2) {
+          this.error = true;
+          this.errormsg = "Vos mots de passe sont différents !";
+          setTimeout(
+            function() {
+              this.error = false;
+            }.bind(this),
+            3000
+          );
+        } else {this.error = false;}
 
-          if(!this.error){// si erreur n'est pas true
-            this.register = false;//retourne vers le login
-            this.registered = true; //affiche l'alerte de succes
-            setTimeout(function(){ this.registered = false; }.bind(this), 3000);
-          }
-        }
-      }
-      ,
-      login (email, password) {
-        this.authenticate({strategy: 'local', email, password})
-          .then(()=>{
-            this.$router.push("/");
+         this.createUser({ email, password, name })
+          .then(response => {
+            this.login(email, password);
           })
           .catch(error => {
             let type = error.errorType;
@@ -97,18 +86,6 @@ import { mapActions } from "vuex";
             this.errormsg = error.message;
             this.error = true;
           });
-
-        // if (!this.error) {
-        //   // si erreur n'est pas true
-        //   this.register = false; //retourne vers le login
-        //   this.registered = true; //affiche l'alerte de succes
-        //   setTimeout(
-        //     function() {
-        //       this.registered = false;
-        //     }.bind(this),
-        //     3000
-        //   );
-        // }
       }
     },
     login(email, password) {
@@ -117,13 +94,12 @@ import { mapActions } from "vuex";
           this.$router.push("/");
         })
         .catch(error => {
-          // Convert the error to a plain object and add a message.
-          let type = error.className;
+          let type = error.errorType;
           error = Object.assign({}, error);
           error.message =
-            type === "not-authenticated"
-              ? "Incorrect email or password."
-              : "An error prevented login.";
+            type === "uniqueViolated"
+              ? "That email address is unavailable."
+              : "An error prevented signup.";
           this.errormsg = error.message;
           this.error = true;
           setTimeout(
