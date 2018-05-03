@@ -29,6 +29,9 @@
         <v-alert type="success" :value="registered">Votre compte est crée ! Log in</v-alert>
       </v-card>
     </v-flex>
+       <v-snackbar :timeout="3000" top v-model="snackbar">Les champs sont vides
+         <v-btn flat color="primary" @click.native="snackbar = false">Close</v-btn>
+      </v-snackbar>
   </v-layout>
 </template>
 <script>
@@ -44,15 +47,17 @@
         error: false,
         errormsg: undefined,
         register:false,
-        registered:false
+        registered:false,
+        snackbar:false
       }
     },
     methods: {
       toggleRegister () {
         if(this.register)
           this.register = false;
-        else
+        else{
           this.register = true;
+        }
       },
       submit () {
         if(this.register){
@@ -74,8 +79,6 @@
             this.registered = true; //affiche l'alerte de succes
             setTimeout(function(){ this.registered = false; }.bind(this), 3000);
           }
-          
-          
         }
       }
       ,
