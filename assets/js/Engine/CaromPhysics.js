@@ -4,7 +4,9 @@ export default class CaromPhysics{
         this.isStationary = new THREE.Vector3(0,0,0);
     }
 
-
+     /*******************************************************************************
+    * Calcul toutes le collision qui arriveront dans le frame actuel
+    *******************************************************************************/
     detectAllCollisions(balls){    
         let n = balls.length;
         let currentFrameCollisions = [];
@@ -231,22 +233,19 @@ export default class CaromPhysics{
     }    
 
     isObliqueBallCollision(vX0, vY0, vX1, vY1) {
-        // calculate dot product of v0 and v1
+        //Calcule le produit DOT (scalaire)
         let dotProduct = vX0 * vX1 + vY0 * vY1;
+        
+        let V0 = Math.sqrt(vX0*vX0 + vY0*vY0);
+        let V1 = Math.sqrt(vX1*vX1 + vY1*vY1);
 
-        // calculate the amount of v0 and v1
-        let amountV0 = Math.sqrt(vX0*vX0 + vY0*vY0);
-        let amountV1 = Math.sqrt(vX1*vX1 + vY1*vY1);
+        //Calculer l'angle entre les deux
+        let cosAngle = dotProduct / (V0 * V1);
 
-        // calculate cos of the angle between v0 and v1
-        let cosAngle = dotProduct / (amountV0 * amountV1);
-
-        // calculate the angle
+        //Calculer l'angle
         let angle = Math.acos(cosAngle);
 
-        //console.log('COS ANGLE', angle * 180 / Math.PI, cosAngle);
-
-        // the collision is oblique if the angle is not a multiple of PI/2
+        //La collision est oblique si elle n'est pas un multiple de Pi/2 (90 degrees)
         return (angle % (Math.PI/2)) !== 0;
     }
 

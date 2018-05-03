@@ -25,8 +25,8 @@
             <v-btn v-if="register == true" color="primary" v-on:click="submit()">Submit</v-btn>
           <v-spacer></v-spacer>
         </v-card-actions>
-        <v-alert type="error" :value="error">Error(s) in the form bruh, wtf</v-alert>
-        <v-alert type="success" :value="registered">Registered</v-alert>
+        <v-alert type="error" :value="error">{{errormsg}}</v-alert>
+        <v-alert type="success" :value="registered">Votre compte est crée ! Log in</v-alert>
       </v-card>
     </v-flex>
   </v-layout>
@@ -42,6 +42,7 @@
         password: "",
         password2: "",
         error: false,
+        errormsg: undefined,
         register:false,
         registered:false
       }
@@ -54,19 +55,28 @@
           this.register = true;
       },
       submit () {
-        /*
-        if(this.email == "" || this.nom == "" || this.password.length == "" || this.password2.length == "")
-          this.error = true;
-        else if(this.password != this.password2)
-          this.error = true;
-        else
-          this.error = false;
-        
-        if(!this.error){// si erreur n'est pas true
-          this.register = false;
-          this.registered = true;
+        if(this.register){
+          if(this.email == "" || this.nom == "" || this.password.length == "" || this.password2.length == ""){
+            this.errormsg = "Un ou plusieurs champs sont vides !"
+            this.error = true;
+            setTimeout(function(){ this.error = false; }.bind(this), 3000);
+          } 
+          else if(this.password != this.password2){
+            this.error = true;
+            this.errormsg = "Vos mots de passe sont différents !"
+            setTimeout(function(){ this.error = false; }.bind(this), 3000);
+          }
+          else
+            this.error = false;
+
+          if(!this.error){// si erreur n'est pas true
+            this.register = false;//retourne vers le login
+            this.registered = true; //affiche l'alerte de succes
+            setTimeout(function(){ this.registered = false; }.bind(this), 3000);
+          }
+          
+          
         }
-        */
       }
       ,
       login (email, password) {
@@ -81,7 +91,9 @@
             error.message = (type === 'not-authenticated')
               ? 'Incorrect email or password.'
               : 'An error prevented login.'
-            this.error = error
+            this.errormsg = error.message;
+            this.error = true;
+            setTimeout(function(){ this.error = false; }.bind(this), 3000);
         })
       },
       ...mapActions('auth', ['authenticate'])
