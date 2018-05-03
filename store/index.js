@@ -22,5 +22,6 @@ export const actions = {
 export const plugins = [
   service("parties"),
   service("users"),
-  auth({ userService: "users", store: { publicPages: ["login"] } })
+  service("coups"),
+  auth({ userService: "users"})
 ];
