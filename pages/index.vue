@@ -17,12 +17,31 @@
           </v-card-actions>
         </v-card>
     </v-flex>
-    <v-card-text style="height: 100px; width:100px; position: fixed; bottom:0px; right:25px;">
-      <v-btn absolute dark fab top right color="primary">
+    <v-speed-dial v-model="fab" bottom right :direction="direction" :transition="transition" fixed style="right:25px;bottom:50px" >
+        <v-btn slot="activator" color="blue darken-2" dark fab hover v-model="fab" >
         <v-icon>add</v-icon>
-      </v-btn>
-    </v-card-text>
+        <v-icon>close</v-icon></v-btn>
+     <!-- <v-btn fab dark small color="green"><v-icon>edit</v-icon></v-btn>
+      <v-btn fab dark small color="indigo"><v-icon>add</v-icon></v-btn>
+      <v-btn fab dark small color="red" ><v-icon>delete</v-icon></v-btn> -->
+      
+      
+      <v-chip color="red" text-color="white">
+        <v-avatar><v-icon class="red darken-4">add</v-icon></v-avatar>Carom 3 bandes
+      </v-chip>
+      <v-chip color="orange" text-color="white">
+        <v-avatar><v-icon class="orange darken-4">add</v-icon></v-avatar>Carom 1 bande
+      </v-chip>
+      <v-chip color="green" text-color="white">
+        <v-avatar><v-icon class="green darken-4">add</v-icon></v-avatar>Carom Libre
+      </v-chip>
+
+
+
+
+    </v-speed-dial>
   </v-layout>
+  
 </template>
 <script>
   export default {
@@ -33,11 +52,20 @@
     data(){
       return ({
         items: [
-          { id:'1', titre: 'Carom Libre', desc:'1 Un des meilleur jeux au monde', color:'blue',  link:"/carom/libre"},
+          { id:'1', titre: 'Carom Libre', desc:'1 Un des meilleur jeux au monde', color:'green',  link:"/carom/libre"},
           { id:'2', titre: 'Carom 1 bande', desc:'2 Un des meilleur jeux au monde', color:'orange', link:"/carom/1bande"},
-          { id:'3', titre: 'Carom 3 bandes', desc:'3 Un des meilleur jeux au monde', color:'green', link:"/carom/3bandes"}
-        ]
+          { id:'3', titre: 'Carom 3 bandes', desc:'3 Un des meilleur jeux au monde', color:'red', link:"/carom/3bandes"}
+        ],
+
+        direction: 'left',
+        fab: false,
+        fling: false,
+        hover: true,
+        tabs: null,
+        transition: 'slide-y-reverse-transition'
+
       })
     } 
   }
 </script>
+

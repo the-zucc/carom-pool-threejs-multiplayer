@@ -19,7 +19,7 @@ module.exports = {
     link: [
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
       { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons' },
-      { rel: '',type: 'text/css', href: 'assets/style/transitions.css' }
+      { rel: '',type: 'text/css', href: 'assets/style/style.css' }
     ]
   },
 
@@ -33,7 +33,7 @@ module.exports = {
   */
   css: [
     'vuetify/src/stylus/main.styl',
-    'assets/style/transitions.css'
+    'assets/style/style.css'
   ],
 
   /*
