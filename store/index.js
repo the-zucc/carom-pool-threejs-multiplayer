@@ -23,5 +23,5 @@ export const plugins = [
   service("parties"),
   service("users"),
   service("coups"),
-  auth({ userService: "users", store: { publicPages: ["login"] } })
+  auth({ userService: "users"})
 ];
