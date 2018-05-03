@@ -10,22 +10,23 @@ let controller = null;
 function startGame(gameVariant,me,playerList){		
 	let playerListTMP = '{"joueurs":[{"nom":"JM Deschamps","score":"420" },{"nom":"Pye Pwol","score":"1337"}]}';
 	let Json = JSON.parse(playerListTMP);	
-	controller = new Controller("TEST",gameVariant,Json);	
+	controller = new Controller("JM Deschamps",gameVariant,Json);	
 	startGameLoop();	
 }
 
 function startGameLoop(){
-	let tmp = performance.now()
+	//let tmp = performance.now()
 
 	controller.tick();
-	console.log("This thicc took "+(performance.now() - tmp)+" [B]illiseconds ")
+	//console.log("This tick took "+(performance.now() - tmp)+" [B]illiseconds ")
 	
 	//Callback function
 	requestAnimationFrame(startGameLoop);	
 }
 
 class Controller{
-	constructor(me,gameVariant,playerList){		
+	constructor(me,gameVariant,playerList){	
+		this.me = me;	
 		this.modele = new GameModel(this,gameVariant,playerList);
 		this.vue = new GameView(this);
 	}

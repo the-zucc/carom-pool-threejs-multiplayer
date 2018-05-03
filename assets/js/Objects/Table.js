@@ -19,23 +19,7 @@ export default class CaromTable{
 		this.model.position.set(this.x,this.y,this.z)	
 
 		this.initGameSurface();	
-		this.initTableFrame();
-
-		this.edges = [this.topEdge,this.bottomEdge,this.leftEdge,this.rightEdge];
-		this.cornerMax = new THREE.Vector3(this.width/2-0.75, 1.5 ,this.depth/2-0.75)
-		this.cornerMin = new THREE.Vector3(-this.width/2+0.75, 1.5 ,-this.depth/2+0.75)	
-
-		//TEMPORAIRE TEST
-		let LIMIT = new THREE.BoxGeometry(0.1,20,0.1)
-		let mat = new THREE.MeshPhongMaterial( {color: 0xFF0000} );
-
-		let tmp1 = new THREE.Mesh( LIMIT, mat );	
-		tmp1.position.copy(this.cornerMax)
-
-		let tmp2 = new THREE.Mesh( LIMIT, mat );	
-		tmp2.position.copy(this.cornerMin)
-		this.model.add(tmp1)
-		this.model.add(tmp2)	
+		this.initTableFrame();	
 	}
 
 	initGameSurface(){
@@ -45,6 +29,7 @@ export default class CaromTable{
 		let edgeMaterial = new THREE.MeshPhongMaterial( {color: this.edgeColor} );
 		this.surface = new THREE.Mesh( surfaceGeo, surfaceMaterial );	
 		this.surface.position.y = -0.505;
+		this.surface.receiveShadow = true;
 	
 		let marginPos = 0.5;
 		let marginEdge = 2;

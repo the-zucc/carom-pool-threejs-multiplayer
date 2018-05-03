@@ -24,7 +24,8 @@ export default class GameView{
 		// Init le renderer 
 		this.renderer = new THREE.WebGLRenderer({ antialias: true , alpha: true	});	
 		this.renderer.setClearColor("#fff", 0);
-		this.renderer.setSize(sceneWidth, sceneHeight);		
+		this.renderer.setSize(sceneWidth, sceneHeight);	
+		this.renderer.shadowMap.enabled = true;	
 		document.getElementById("carom-container").appendChild( this.renderer.domElement );
 
 		//Init Camera et lumieres
@@ -50,7 +51,7 @@ export default class GameView{
 		//Controles
 		this.cameraControls = new OrbitControls( this.camera, this.renderer.domElement );
 		this.cameraControls.autoRotate = true;
-		this.cameraControls.autoRotateSpeed = 0.25;
+		this.cameraControls.autoRotateSpeed = 1.25;
 		this.cameraControls.enableZoom = true;
 		this.cameraControls.enablePan = false;
 	}
@@ -67,10 +68,10 @@ export default class GameView{
 				spotLight.decay = 0.5;
 				spotLight.distance = 80;
 				spotLight.castShadow = true;
-				spotLight.shadow.mapSize.width = 512;
-				spotLight.shadow.mapSize.height = 512;
-				spotLight.shadow.camera.near = 1;
-				spotLight.shadow.camera.far = 200;
+				spotLight.shadow.mapSize.width = 1024;
+				spotLight.shadow.mapSize.height = 1024;
+				spotLight.shadow.camera.near = 0.5;
+				spotLight.shadow.camera.far = 500;
 
 				//Target
 				let target1 = new THREE.Object3D();
@@ -86,10 +87,10 @@ export default class GameView{
 				spotLight2.decay = 0.5;
 				spotLight2.distance = 80;
 				spotLight2.castShadow = true;
-				spotLight2.shadow.mapSize.width = 512;
-				spotLight2.shadow.mapSize.height = 512;
-				spotLight2.shadow.camera.near = 1;
-				spotLight2.shadow.camera.far = 200;
+				spotLight2.shadow.mapSize.width = 1024;
+				spotLight2.shadow.mapSize.height = 1024;
+				spotLight2.shadow.camera.near = 0.5;
+				spotLight2.shadow.camera.far = 500;
 				
 				//Target
 				let target2 = new THREE.Object3D();
@@ -103,9 +104,15 @@ export default class GameView{
 
 
 	}
+
+	changeCameraFocus(obj){
+		this.cameraControls.target=obj.position;		
+	}
 	
 	renderScene(){
 		this.cameraControls.update();		
 		this.renderer.render( this.scene, this.camera);
 	}
+
+	
 }

@@ -14,18 +14,19 @@ export default class CaromPhysics{
 			const ball1 = balls[i];	
 
 			//Si la boule n'est pas stationaire, ne pas calculer
-			if(!ball1.velocity.equals(this.isStationary)){
+			if(true){//!ball1.velocity.equals(this.isStationary)){
 
 				//Optimisation pour eviter une double comparaison
 				if (i < (n-1)) {
 					for (let j = i + 1; j < n; j++) {
-						const ball2 = balls[j];
+                        const ball2 = balls[j];                        
 	
 						//Predire les collision entre les deux boules actuelles
 						let t = this.getCollisionTime(ball1,ball2);
 	
 						//Si il y a une collision future ET elle se produira pendant le frame actuel
 						if (t !== null && t >= 0 && t <= 1) {
+                            console.log("Collision avec : "+ball1.model.name+" et "+ball2.model.name)
 							//Ajouter collision a la liste
 							currentFrameCollisions.push({
                                 t: t,
@@ -34,7 +35,9 @@ export default class CaromPhysics{
                             })											
 						}					
 					}
-				}				
+                }	
+                //Applique une pseudo friction
+                ball1.velocity.multiplyScalar(0.99)			
 			}			
         }	
         return currentFrameCollisions;
@@ -165,15 +168,14 @@ export default class CaromPhysics{
         let i, n, ball, ba = balls;
         for (i = 0, n = ba.length; i < n; i++) {
             ball = ba[i];
-            ball.model.position.add(ball.velocity.clone().multiplyScalar(fraction));  
-        }      
+            ball.model.position.add(ball.velocity.clone().multiplyScalar(fraction));             
+        }  
     }
 
     /*******************************************************************************
     * Calcule la collision entre deux balles
     *******************************************************************************/
     ballToBallCollision(ball1,ball2) {  
-
         let x1 = ball1.model.position.getComponent(0);
         let y1 = ball1.model.position.getComponent(2);
         let vX1 = ball1.velocity.getComponent(0);
@@ -234,8 +236,7 @@ export default class CaromPhysics{
 
     isObliqueBallCollision(vX0, vY0, vX1, vY1) {
         //Calcule le produit DOT (scalaire)
-        let dotProduct = vX0 * vX1 + vY0 * vY1;
-        
+        let dotProduct = vX0 * vX1 + vY0 * vY1;        
         let V0 = Math.sqrt(vX0*vX0 + vY0*vY0);
         let V1 = Math.sqrt(vX1*vX1 + vY1*vY1);
 

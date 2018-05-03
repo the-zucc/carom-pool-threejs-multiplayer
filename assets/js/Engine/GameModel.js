@@ -9,7 +9,7 @@ export default class GameModel{
 		/*
 		*
 		*/
-		this.collisionTest = true;
+		this.collisionTest = false;
 		/*
 		*
 		*/
@@ -17,57 +17,94 @@ export default class GameModel{
 		this.controller = controller;
 		this.physics = new CaromPhysics();
 		this.variant = gamevariant;
-
+		
 		this.joueurs = []
 		this.boules = []
+
+		this.mouse = new THREE.Vector2();		
+		this.raycaster = new THREE.Raycaster();
+		
+		
+		window.onmousemove = (e)=>{
+			this.mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+			this.mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;			
+		}
+
+		//TEMPORAIRE
+		this.justHit = false;
+		this.holding = false;
+		window.onkeydown = (e)=>{
+			if(e.which == 72){
+				this.holding = true;
+			}
+		}
+		
+		window.onkeyup = (e)=>{
+			if(e.which == 72){
+				this.justHit = true;
+				setTimeout(()=>{this.justHit = false},200);
+				this.holding = false;
+			}
+		}
+	 	
+
 		
 		this.initGame(playerList)			
 	}	
 
 	initGame(playerList){
 		let bouleNeutre = 0xe31919;
-		let nbBoulesNeutres = 80;
+		
 
 		//Init table et boule neutre
 		this.table = new CaromTable(0,0,0);	
 		
-		if(!this.collisionTest){
-					this.boules.push(new Boule(25,0,"Neutre",bouleNeutre));					
-					//Init players
-					for(let i = 0; i<2; i++) {
-						const actuel = playerList.joueurs[i];			
-						let couleur = null; 
-						let position = null;
+		this.boules.push(new Boule(25,0,null,bouleNeutre));							
+		//Init players
+		for(let i = 0; i<2; i++) {
+			const actuel = playerList.joueurs[i];			
+			let couleur = null; 
+			let position = null;
+			let isActive = null;
+			if(i == 0){
+				couleur = 0xe6ac00;
+				position = [-20,0];
+				isActive = true;
+			}
+			else{
+				couleur = 0xffffcc;
+				position = [-20,5];
+				isActive = false;
+			}
 
-						if(i == 0){
-							couleur = 0xe6ac00;
-							position = [-20,0];
-						}
-						else{
-							couleur = 0xffffcc;
-							position = [-20,5];
-						}
-
-						this.joueurs.push(new Joueur(actuel.nom,actuel.score,couleur,position));
-						this.boules.push(this.joueurs[i].boule)
-					}
+			this.joueurs.push(new Joueur(actuel.nom,actuel.score,couleur,position,isActive));
+			this.boules.push(this.joueurs[i].boule)
 		}
-		else{
-					//-----BALLES ADDITIONNELLES POUR TEST DE COLLISIONS-----
-					for(let i = 0; i < nbBoulesNeutres; i++){
-						let x = Math.floor(Math.random()*20 -10);
-						let z = Math.floor(Math.random()*40 -20);
-						let boule = new Boule(x,z,"B_"+i.toString(),bouleNeutre);
-						boule.velocity.set(Math.random()*1.5,0,Math.random()*1.5)
-						this.boules.push(boule)
-					}
-		}				
+	
+		if(this.collisionTest){
+			let nbBoulesNeutres = 10;
+			//-----BALLES ADDITIONNELLES POUR TEST DE COLLISIONS-----
+			for(let i = 0; i < nbBoulesNeutres; i++){
+				let x = Math.floor(Math.random()*20 - 10);
+				let z = Math.floor(Math.random()*20 -10);
+				let boule = new Boule(x,z,"B_"+i.toString(),bouleNeutre);				
+				this.boules.push(boule);
+			}
+		}
+						
 	}	
 
 	update(){		
 		let currentFrameTime = 1;
 		let currentFrameCollisions;
 		
+		for(let j = 0; j < this.joueurs.length; j++){
+			const player = this.joueurs[j];
+			if(player.nom == this.controller.me && player.isActive){				
+				player.queue.update(this.controller.vue,this.justHit,this.holding);
+			}
+		}		
+
 		//Tant que le tick actuel n'est pas termine
 		while(currentFrameTime > 0){
 			//Calculer toutes les collisions possibles
@@ -103,5 +140,5 @@ export default class GameModel{
 				break;
 			}
 		}			
-	}	
+	}
 }

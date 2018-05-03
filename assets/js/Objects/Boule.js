@@ -13,14 +13,19 @@ export default class Boule{
 		//TEST TEST TEST		
 		this.velocity = new THREE.Vector3(0,0,0)//(Math.random(),0,Math.random());
 		
-		this.createModel(prop);
+		if(this.proprietaire != undefined)
+			this.createModel(prop.nom);
+		else
+			this.createModel("NEUTRAL");
 	}	
 
 	createModel(name){
-		let geometry = new THREE.SphereGeometry(this.radius,  10 , 10);
-		let material = new THREE.MeshPhongMaterial({ color:this.couleur ,  transparent: true,  opacity: 0.95  });
+		let geometry = new THREE.SphereBufferGeometry(this.radius,  25 , 25);
+		let material = new THREE.MeshPhongMaterial({ color:this.couleur ,  transparent: false,  opacity: 1  });
 		this.model = new THREE.Mesh( geometry, material );
 		this.model.name = name;
+		this.model.castShadow = true;
+		this.model.recieveShadow = true;
 		this.model.position.set(this.x,this.y,this.z);				
 	}
 }
