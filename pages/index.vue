@@ -44,28 +44,46 @@
   
 </template>
 <script>
-  export default {
-    transition (to, from) {
-      if (!from) return 'slide-left';
-      if(to.query.page!=0) return to.query.page < from.query.page ? 'slide-right' : 'slide-left';
-    },
-    data(){
-      return ({
-        items: [
-          { id:'1', titre: 'Carom Libre', desc:'1 Un des meilleur jeux au monde', color:'green',  link:"/carom/libre"},
-          { id:'2', titre: 'Carom 1 bande', desc:'2 Un des meilleur jeux au monde', color:'orange', link:"/carom/1bande"},
-          { id:'3', titre: 'Carom 3 bandes', desc:'3 Un des meilleur jeux au monde', color:'red', link:"/carom/3bandes"}
-        ],
+export default {
+  transition(to, from) {
+    if (!from) return "slide-left";
+    if (to.query.page != 0)
+      return to.query.page < from.query.page ? "slide-right" : "slide-left";
+  },
+  data() {
+    return {
+      items: [
+        {
+          id: "1",
+          titre: "Carom Libre",
+          desc: "1 Un des meilleur jeux au monde",
+          color: "green",
+          link: "/carom/libre"
+        },
+        {
+          id: "2",
+          titre: "Carom 1 bande",
+          desc: "2 Un des meilleur jeux au monde",
+          color: "orange",
+          link: "/carom/1bande"
+        },
+        {
+          id: "3",
+          titre: "Carom 3 bandes",
+          desc: "3 Un des meilleur jeux au monde",
+          color: "red",
+          link: "/carom/3bandes"
+        }
+      ],
 
-        direction: 'left',
-        fab: false,
-        fling: false,
-        hover: true,
-        tabs: null,
-        transition: 'slide-y-reverse-transition'
-
-      })
-    } 
+      direction: "left",
+      fab: false,
+      fling: false,
+      hover: true,
+      tabs: null,
+      transition: "slide-y-reverse-transition"
+    };
   }
+};
 </script>
 

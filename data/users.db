@@ -1,6 +1,6 @@
 {"email":"a@a.com","password":"$2a$12$nDo2nzAaUpfNHbov2AQOe.yASg8Q22T6yl2z.j4aoYXTzjzMOZJgu","name":"allo","_id":"N1o9uf9zNBt0V6of"}
+{"email":"loicbachellerie@gmail.com","password":"$2a$12$IohCaWmoCWG34iy5T./Bpee01GGaQheenZ0pC5rnopwFDzAjo378i","name":"Loic","_id":"R41GTK9OR2OTYv9b"}
 {"email":"allo@poulet.com","password":"$2a$12$5P3QrvvqwQqd8KMvy3hdzOggzDfX/J05AAignSrxiwNsGX85gsvrK","_id":"UhRXgu7SAEx5uE6X"}
 {"email":"feathers@example.com","password":"$2a$12$tuROSA5XnDtog8y18N3rbuf8rQZhzMqN54kkAnC7U4mj1R8TTjcmi","_id":"homxZM8pRjILbtQB"}
 {"_id":"vrsbQdCooDkLg2bX"}
 {"$$indexCreated":{"fieldName":"email","unique":true,"sparse":false}}
-{"email":"loicbachellerie@gmail.com","password":"$2a$12$IohCaWmoCWG34iy5T./Bpee01GGaQheenZ0pC5rnopwFDzAjo378i","name":"Loic","_id":"R41GTK9OR2OTYv9b"}
