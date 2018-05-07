@@ -1,3 +1,9 @@
+/************************************************************************************
+* Projet : Carom
+* Cours  : B63 Programmation Web Avancée 
+* Auteur : Kevin Mwanangwa
+* Fichier: GameView.js 
+************************************************************************************/
 import * as THREE from 'three';
 import { Object3D } from 'three';
 let OrbitControls = require('three-orbit-controls')(THREE);
@@ -13,9 +19,9 @@ export default class GameView{
 		this.buildScene();			
 	}
 
-/********************************************************************************* 
-*   Init WebGL Scene
-*************************************************************************************/
+	/*******************************************************************************
+    * Initialise la scene de base
+    *******************************************************************************/
 	buildScene(){	
 		// Creer une scene vide
 		this.scene = new THREE.Scene();				
@@ -34,6 +40,9 @@ export default class GameView{
 		this.initLights();		
 	}
 
+	/*******************************************************************************
+    * Initialises les modeles 3D du modele
+    *******************************************************************************/
 	initGameObjets(){
 		let modele = this.controller.modele;
 		//Init les objets
@@ -50,6 +59,9 @@ export default class GameView{
 		}	
 	}
 
+	/*******************************************************************************
+    * Initialise la camera
+    *******************************************************************************/
 	initCamera(){
 		//Camera
 		this.camera = new THREE.PerspectiveCamera( 75, screen.width / screen.height  , 1, 10000 );    
@@ -73,6 +85,9 @@ export default class GameView{
 		this.cameraControls.enablePan = false;		
 	}
 
+	/*******************************************************************************
+    * Initialise les lumieres
+    *******************************************************************************/
 	initLights(){
 		//Lumiere ambiante
 		this.scene.add(new THREE.AmbientLight( 0xFFFFFF, 1.25));
@@ -109,6 +124,9 @@ export default class GameView{
 		this.scene.add( this.spotLight2 );								
 	}
 
+	/*******************************************************************************
+    * Transition LERP vers la cible en parametre
+    *******************************************************************************/
 	changeCameraFocus(obj){
 		this.cameraControls.autoRotate = false;		
 		let currentFocus = this.cameraControls.target.clone();		
@@ -118,17 +136,19 @@ export default class GameView{
 		let animation = setInterval(()=>{		
 			tick+=1;
 
-			// Interpolate currentFocus towards targetFocus
+			//Interpoler le focus actuel en direction du focus cible
 			currentFocus.lerp(targetFocus, 0.05);			
-			this.cameraControls.target = currentFocus;
-			console.log(currentFocus)
-			if(tick ==100){
+			this.cameraControls.target = currentFocus;			
+			if(tick ==80){
 				this.cameraControls.target = obj.model.position;
 				window.clearInterval(animation);
 			}
 		},17)		
 	}
 
+	/*******************************************************************************
+    * Reset la camera, centre au millieu de la scene
+    *******************************************************************************/
 	resetCameraFocus(){
 		this.cameraControls.autoRotate = true;
 		let currentFocus = this.cameraControls.target.clone();		
@@ -142,13 +162,16 @@ export default class GameView{
 			currentFocus.lerp(targetFocus, 0.05);			
 			this.cameraControls.target = currentFocus;
 					
-			if(tick ==100){
+			if(tick ==80){
 				this.cameraControls.target = this.scene.position;
 				window.clearInterval(animation);
 			}
 		},17)		
 	}
 
+	/*******************************************************************************
+    * Sequence lorsque le joueur actuel vient de faire un carom
+    *******************************************************************************/
 	hasScored(){
 		this.spotLight2.color.set(0x00FF00)
 		this.spotLight2.intensity = 20;
@@ -158,6 +181,9 @@ export default class GameView{
 		},2000)
 	}
 
+	/*******************************************************************************
+    * Sequence lorsque le joueur actuel a raté son tour
+    *******************************************************************************/
 	hasNotScored(){
 		this.spotLight2.color.set(0xFF0000)
 		this.spotLight2.intensity = 20;
@@ -167,6 +193,9 @@ export default class GameView{
 		},2000)
 	}
 
+	/*******************************************************************************
+    * Sequence qui change l'eclairage du joueur actuel
+    *******************************************************************************/
 	rotateSpotLight(){
 		let delta = (this.target.position.z)/100
 		let tick = 0;
@@ -179,6 +208,9 @@ export default class GameView{
 		},25)	
 	}
 	
+	/*******************************************************************************
+    * Boucle de rendering
+    *******************************************************************************/
 	renderScene(){		
 		this.cameraControls.update();		
 		this.renderer.render( this.scene, this.camera);

@@ -1,3 +1,9 @@
+/************************************************************************************
+* Projet : Carom
+* Cours  : B63 Programmation Web Avancée 
+* Auteur : Kevin Mwanangwa
+* Fichier: Queue.js 
+************************************************************************************/
 import * as THREE from 'three'
 
 export default class Queue{
@@ -21,6 +27,9 @@ export default class Queue{
 
 	}	
 
+	/*******************************************************************************
+    * Creation du modele 3D
+    *******************************************************************************/
 	createModel(name){
 		this.model = new THREE.Object3D();
 		this.pivot.add(this.model);
@@ -68,6 +77,7 @@ export default class Queue{
 		bout3.recieveShadow = true;	
 		cue.add(bout3);		
 
+		//Jauge de force
 		this.baseThickness = 0.2;
 		let geometry5 = new THREE.CylinderBufferGeometry(0.35,0.35,this.baseThickness, 15 , 15);	
 		let materialBase = new THREE.MeshPhongMaterial({ color: 0x000000,  transparent: true,  opacity: 0.5  });
@@ -89,26 +99,32 @@ export default class Queue{
 		base.add(this.powerBar);		
 	}
 
+	/*******************************************************************************
+    * Update la position de la queue
+    *******************************************************************************/
 	update(cueAngle,barAngle,percentage,justShot){		
-		//Update angles		
+		//Update les angles		
 		this.pivot.rotation.y = cueAngle;
 		this.powerBar.parent.rotation.z = barAngle;
 
-		//Update powerBar
+		//Update la powerBar
 		this.powerBar.geometry.dispose();
 		this.force = this.powerBarLength*percentage;
 		let newGeo = new THREE.CylinderBufferGeometry(0.25,0.25,this.force, 15 , 15);
 		this.powerBar.geometry = newGeo;
 		this.powerBar.position.set(0,(this.force/2)+this.baseThickness/2,0);		
 		
-		//Update position
+		//Update la position
 		this.model.position.y = this.baseDistance+(this.force*1.2)
 
-		//Verify shot
-		if(justShot)
+		//Verifie si le joueur a tiré et que la force n'est pas nulle
+		if(justShot && percentage != 0.001)
 			this.hitBall(cueAngle);		
 	}
 
+	/*******************************************************************************
+    * Frapper la boule
+    *******************************************************************************/
 	hitBall(angle){					
 		//Commence le tour actuel
 		this.proprietaire.controlleur.startProccessingTurn();			
@@ -124,7 +140,9 @@ export default class Queue{
 		},100);
 	}		
 	
-
+	/*******************************************************************************
+    * Cacher la queue
+    *******************************************************************************/
 	fadeUp(){
 		let tick = 0;
 		let animationUp = setInterval(()=>{			
@@ -136,6 +154,9 @@ export default class Queue{
 		},17)	
 	}
 
+	/*******************************************************************************
+    * Afficher la queue
+    *******************************************************************************/
 	fadeDown(){				
 		let tick = 0;
 		let animationDown = setInterval(()=>{			

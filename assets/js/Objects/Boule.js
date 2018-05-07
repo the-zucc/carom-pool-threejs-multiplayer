@@ -1,3 +1,9 @@
+/************************************************************************************
+* Projet : Carom
+* Cours  : B63 Programmation Web Avancée 
+* Auteur : Kevin Mwanangwa
+* Fichier: Boule.js 
+************************************************************************************/
 import * as THREE from 'three'
 
 export default class Boule{
@@ -18,6 +24,9 @@ export default class Boule{
 			this.createModel("NEUTRAL");
 	}	
 
+	/*******************************************************************************
+    * Creation du modele 3D
+    *******************************************************************************/
 	createModel(name){
 		let geometry = new THREE.SphereBufferGeometry(this.radius,  25 , 25);
 		let material = new THREE.MeshPhongMaterial({ color:this.couleur ,  transparent: false,  opacity: 1  , shininess: 60});

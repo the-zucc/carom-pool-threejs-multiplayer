@@ -1,5 +1,5 @@
 /************************************************************************************
-* Projet : Carombole
+* Projet : Carom
 * Cours  : B63 Programmation Web Avancée 
 * Auteur : Kevin Mwanangwa
 * Fichier: CaromPhysics.js 
@@ -9,7 +9,7 @@ export default class CaromPhysics{
     constructor(modele){  
         this.isStationary = new THREE.Vector3(0,0,0);
         this.lowestSpeed = 0.005;
-        this.friction = 0.015;
+        this.friction = 0.018;
         this.modele = modele;       
     }
 
@@ -21,19 +21,17 @@ export default class CaromPhysics{
         let n = balls.length;
         let currentFrameCollisions = [];
 		for (let i = 0; i < n; i++) {
-            const ball1 = balls[i];	
-            		
+            const ball1 = balls[i];	            		
             //Optimisation pour eviter une double comparaison
             if (i < (n-1)) {
                 for (let j = i + 1; j < n; j++) {
-                    const ball2 = balls[j];                        
-
+                    const ball2 = balls[j];       
+                    
                     //Predire les collision entre les deux boules actuelles
                     let t = this.getCollisionTime(ball1,ball2);
 
                     //Si il y a une collision future ET elle se produira pendant le frame actuel
-                    if (t !== null && t >= 0 && t <= 1) {
-                        
+                    if (t !== null && t >= 0 && t <= 1) {                        
                         //Ajouter collision a la liste
                         currentFrameCollisions.push({
                             t: t,

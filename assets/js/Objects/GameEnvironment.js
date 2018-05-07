@@ -1,3 +1,9 @@
+/************************************************************************************
+* Projet : Carom
+* Cours  : B63 Programmation Web Avancée 
+* Auteur : Kevin Mwanangwa
+* Fichier: GameEnvironment.js 
+************************************************************************************/
 import * as THREE from 'three'
 
 export default class GameEnvironment{
@@ -6,6 +12,9 @@ export default class GameEnvironment{
         this.createModel();
     }	
 
+    /*******************************************************************************
+    * Creation du modele 3D
+    *******************************************************************************/
     createModel(name){    
         //Plancher
         let floorTexture = new THREE.TextureLoader().load( require('assets/images/textures/TEST4.jpg'));

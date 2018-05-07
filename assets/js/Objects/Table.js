@@ -1,3 +1,9 @@
+/************************************************************************************
+* Projet : Carom
+* Cours  : B63 Programmation Web Avancée 
+* Auteur : Kevin Mwanangwa
+* Fichier: Table.js 
+************************************************************************************/
 import * as THREE from 'three';
 
 export default class CaromTable{
@@ -23,6 +29,9 @@ export default class CaromTable{
 		this.initTableFrame();	
 	}
 
+	/*******************************************************************************
+    * Creation du modele 3D de la surface de jeu
+    *******************************************************************************/
 	initGameSurface(){
 		//Surface de jeu		
 		let surfaceGeo = new THREE.BoxGeometry( this.width-0.01, this.height, this.depth-0.01 );
@@ -90,6 +99,9 @@ export default class CaromTable{
 		this.edges = [this.topEdge,this.bottomEdge,this.leftEdge,this.rightEdge]		
 	}
 
+	/*******************************************************************************
+    * Creation du modele 3D de la table
+    *******************************************************************************/
 	initTableFrame(){
 		let image = require('assets/images/textures/TEST.jpg');	
 		let textureFrame = new THREE.TextureLoader().load( image);
@@ -197,6 +209,9 @@ export default class CaromTable{
 		this.model.add(lowerBottomEdgeMesh)	
 	}
 
+	/*******************************************************************************
+    * Reinitialise les couleurs des bandes
+    *******************************************************************************/
 	reset(){
 		for (let i = 0; i < this.edges.length; i++) {
 			const element = this.edges[i].model;
@@ -209,7 +224,9 @@ export default class CaromTable{
 	}
 }
 
-
+/*******************************************************************************
+* Class : Edge
+*******************************************************************************/
 class Edge{
 	constructor(model,orientation){
 		this.model = model;
@@ -220,6 +237,9 @@ class Edge{
 		this.edgeHitInvalidLine = 0x002db3;
 	}
 
+	/*******************************************************************************
+    * Change de couleur si valide
+    *******************************************************************************/
 	hasBeenTouched(){		
 		this.model.material.color.set(this.edgeHitValid);
 		for (let i = 0; i < this.model.children.length; i++) {
@@ -228,6 +248,9 @@ class Edge{
 		}
 	}
 
+	/*******************************************************************************
+    * Change de couleur si invalide
+    *******************************************************************************/
 	isInvalid(){
 		this.model.material.color.set(this.edgeHitInvalid);
 		for (let i = 0; i < this.model.children.length; i++) {

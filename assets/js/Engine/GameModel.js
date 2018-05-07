@@ -1,3 +1,9 @@
+/************************************************************************************
+* Projet : Carom
+* Cours  : B63 Programmation Web Avancée 
+* Auteur : Kevin Mwanangwa
+* Fichier: GameModel.js 
+************************************************************************************/
 import Boule from '../Objects/Boule';
 import CaromTable from '../Objects/Table';
 import Joueur from'../Objects/Joueur';
@@ -17,6 +23,9 @@ export default class GameModel{
 		this.initGame(playerList)			
 	}	
 
+	/*******************************************************************************
+    * Initialisation de la partie
+    *******************************************************************************/
 	initGame(playerList){		
 		//Couleur
 		let bouleNeutre = 0x730d0d,
@@ -59,14 +68,16 @@ export default class GameModel{
 		this.physics = new CaromPhysics(this);				
 	}	
 
+	/*******************************************************************************
+    * Boucle de jeu
+    *******************************************************************************/
 	update(){							
 		/**
 		 * Updates le joueur actif
 		 *******************************************************/
 		if(this.controlleur.currentPlayer != null){					
 			this.controlleur.currentPlayer.update()
-		}	
-		
+		}			
 		
 		/**
 		 * Updates les boules
@@ -79,7 +90,8 @@ export default class GameModel{
 			let currentBalls = this.controlleur.currentPlayer.boulesTouchees;	
 			let currentEdges = this.controlleur.currentPlayer.bandesTouchees;
 			let hasHitFirstBall, nbBandes;
-			//Tant que le tick actuel n'est pas termine
+
+			//Tant que le FRAME actuel n'est pas termine
 			while(currentFrameTime > 0){
 				//Variables du joueurs actif				
 				hasHitFirstBall = currentBalls.length >=1 ? true : false;
@@ -101,7 +113,7 @@ export default class GameModel{
 					//Calculer la collision entre les deux boules 
 					let otherBall = this.physics.ballToBallCollision(firstCollision.ballA,firstCollision.ballB);
 					
-					//Si balle touchee
+					//Si balle touchee *******
 					if(otherBall != null ){
 						let ballHasBeenHit = this.controlleur.currentPlayer.hasHitBall(otherBall);
 						
