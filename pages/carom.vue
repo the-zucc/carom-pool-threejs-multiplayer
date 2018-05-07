@@ -7,7 +7,7 @@
 import carom from 'assets/js/Carom.js';
 export default {
 	mounted () {
-		carom.demarrerPartie();
+		carom.demarrerPartie(this.$route.query.type);
 	}
 }
 </script>

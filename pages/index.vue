@@ -58,21 +58,21 @@ export default {
           titre: "Carom Libre",
           desc: "1 Un des meilleur jeux au monde",
           color: "green",
-          link: "/carom/libre"
+          link: "/carom?type=0"
         },
         {
           id: "2",
           titre: "Carom 1 bande",
           desc: "2 Un des meilleur jeux au monde",
           color: "orange",
-          link: "/carom/1bande"
+          link: "/carom?type=1"
         },
         {
           id: "3",
           titre: "Carom 3 bandes",
           desc: "3 Un des meilleur jeux au monde",
           color: "red",
-          link: "/carom/3bandes"
+          link: "/carom?type=3"
         }
       ],
 

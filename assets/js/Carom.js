@@ -1,7 +1,7 @@
 import jeu from'./Engine/Game';
 
-function demarrerPartie(){
-	jeu.startGame(0);
+function demarrerPartie(variation){
+	jeu.startGame(variation);
 }
 
 export default {demarrerPartie};
