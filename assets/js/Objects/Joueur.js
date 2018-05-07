@@ -7,7 +7,9 @@ export default class Joueur{
 		this.controlleur = c;
 		this.nom = nom;
 		this.score = score;
+		this.caroms = 0;
 		this.isActive = isActive;
+		
 		this.bandesTouchees = [];
 		this.boulesTouchees = [];	
 		this.couleur = couleur;	
@@ -48,21 +50,13 @@ export default class Joueur{
 		this.queue.update(cueAngle,barRotation,percentage,justShot);
 	}
 
-	hasHitEdge(edge){
-		let name = edge.model.name;
-		//Si bord pas encore touche, inserer return false
-		if (this.bandesTouchees.filter(function(e) { return e.name === name; }).length == 0) {	
-			this.bandesTouchees.push(edge)
-			return false;
-		}
-		else{
-			return true;
-		}
+	hasHitEdge(edge){		
+		this.bandesTouchees.push(edge)		
 	}
 
 	hasHitBall(ball){
 		let name = ball.model.name;
-		//Si bord pas encore touche, inserer return false
+		//Si balle pas encore touchee
 		if (this.boulesTouchees.filter(function(e) { return e.name === name; }).length == 0) {	
 			this.boulesTouchees.push(ball)
 			return false;

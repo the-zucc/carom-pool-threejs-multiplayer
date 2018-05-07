@@ -9,7 +9,7 @@ export default class CaromPhysics{
     constructor(modele){  
         this.isStationary = new THREE.Vector3(0,0,0);
         this.lowestSpeed = 0.005;
-        this.friction = 0.02;
+        this.friction = 0.015;
         this.modele = modele;       
     }
 

@@ -8,7 +8,7 @@ let controller = null;
 * Initialisation de la page
 *********************************************************************/
 function startGame(gameVariant,me,playerList){		
-	let playerListTMP = '{"joueurs":[{"nom":"JM Deschamps","score":"420" },{"nom":"Pye Pwol","score":"1337"}]}';
+	let playerListTMP = '{"joueurs":[{"nom":"JM Deschamps","score":"420" },{"nom":"JM Deschamps .. again","score":"1337"}]}';
 	let Json = JSON.parse(playerListTMP);	
 	controller = new Controller("JM Deschamps",gameVariant,Json);	
 
@@ -74,17 +74,63 @@ class Controller{
 
 	startProccessingTurn(){
 		this.modele.isProcessing = true;
+		this.resetCameraFocus();
 	}
 
 	endTurn(scored){
+		//Si reussi
 		if(scored){
-			this.currentPlayer.hasScored();
+			this.currentPlayer.caroms+=1;
+			this.vue.hasScored();
+			
+			setTimeout(()=>{
+				this.changeCameraFocus(this.currentPlayer.boule);
+				this.resetPlayer();
+			},2000)
+			
 		}
+		//Sinon
 		else{
-			this.currentPlayer.hasNotScored();
+			this.vue.hasNotScored();
+			this.nextPlayer();
 		}
+		//Reset Modele
+		this.modele.isProcessing = false;
+		this.modele.turnIsValid = true;	
+		this.modele.table.reset();					
 	}
 
+	nextPlayer(){
+		//Change de joueur actif
+		for (let i = 0; i < this.modele.joueurs.length; i++) {
+			let p = this.modele.joueurs[i];			
+			if(p.nom != this.currentPlayer.nom){
+				this.currentPlayer = p;
+				if(p.nom == this.me){
+					setTimeout(()=>{
+						this.changeCameraFocus(this.currentPlayer.boule);
+						this.resetPlayer();
+					},2000);
+				}			
+				break;			
+			}			
+		}
+		this.resetPlayer()
+
+		//Change spotlight
+		this.vue.rotateSpotLight();
+	}
+
+	resetPlayer(){				
+		this.currentPlayer.bandesTouchees = [];
+		this.currentPlayer.boulesTouchees = [];
+		//Aligne la queue au dessus de la boule du joueur		
+		this.currentPlayer.queue.pivot.position.x = this.currentPlayer.boule.model.position.x;
+		this.currentPlayer.queue.pivot.position.z = this.currentPlayer.boule.model.position.z;
+		
+		//Animation
+		this.currentPlayer.queue.fadeDown();
+	}
 	getForceInput(){
 		//Else get force data from server
 		if(this.distanceDown != null){
@@ -108,12 +154,12 @@ class Controller{
 			return false;
 	}
 
-	changeCameraFocus(focus){
-		this.vue.changeCameraFocus(focus);
+	changeCameraFocus(focus){		
+		this.vue.changeCameraFocus(focus);				
 	}
 
-	resetCameraFocus(){
-		this.vue.resetCameraFocus();
+	resetCameraFocus(){		
+		this.vue.resetCameraFocus();				
 	}
 
 	getCueAngle(){

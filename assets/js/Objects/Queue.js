@@ -5,10 +5,11 @@ export default class Queue{
 		this.proprietaire = prop;	
 		this.pivot = new THREE.Object3D();
 		this.pivot.position.copy(this.proprietaire.boule.model.position);
+		this.pivot.position.y+=81;
 		
-		//Si joueur non-actif, fadeUpCue;
-		if(!this.proprietaire.isActive){
-			this.fadeUp();
+		//Si joueur actif, descendre;
+		if(this.proprietaire.isActive){
+			this.fadeDown();
 		}
 			
 		this.baseDistance = 11.65;	
@@ -120,7 +121,7 @@ export default class Queue{
 		
 		setTimeout(()=>{
 			this.fadeUp();
-		},500);
+		},100);
 	}		
 	
 
@@ -128,21 +129,21 @@ export default class Queue{
 		let tick = 0;
 		let animationUp = setInterval(()=>{			
 			tick+=1;
-			this.pivot.position.y += 0.25;			
-			if(tick == 300){
+			this.pivot.position.y += 0.45;			
+			if(tick == 180){
 				window.clearInterval(animationUp);
 			}
-		})	
+		},17)	
 	}
 
 	fadeDown(){				
 		let tick = 0;
 		let animationDown = setInterval(()=>{			
-			tick+=1;
-			this.pivot.position.y -= 0.25;
-			if(tick == 2){
+			tick+=1;			
+			this.pivot.position.y -= 0.45;
+			if(tick == 180){
 				window.clearInterval(animationDown);
 			}
-		})		
+		},17)		
 	}
 }

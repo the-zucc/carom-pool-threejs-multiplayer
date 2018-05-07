@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { Object3D } from 'three';
 let OrbitControls = require('three-orbit-controls')(THREE);
 
 export default class GameView{
@@ -53,8 +54,8 @@ export default class GameView{
 		//Camera
 		this.camera = new THREE.PerspectiveCamera( 75, screen.width / screen.height  , 1, 10000 );    
 		this.camera.position.x = 0;
-		this.camera.position.y = 50;
-		this.camera.position.z = 0;			
+		this.camera.position.y = 15;
+		this.camera.position.z = 38;			
 		this.camera.lookAt(this.scene.position);  		
 		
 		//Controles
@@ -64,10 +65,10 @@ export default class GameView{
 
 		//Empeche de zoom top pres et trop loin
 		this.cameraControls.minDistance = 25;
-		this.cameraControls.maxDistance = 70;
+		this.cameraControls.maxDistance = 70;		
 
 		this.cameraControls.autoRotate = true;
-		this.cameraControls.autoRotateSpeed = 2;
+		this.cameraControls.autoRotateSpeed = 1.5;
 		this.cameraControls.enableZoom = true;
 		this.cameraControls.enablePan = false;		
 	}
@@ -77,7 +78,7 @@ export default class GameView{
 		this.scene.add(new THREE.AmbientLight( 0xFFFFFF, 1.25));
 
 		//Lumieres en haut de la table
-		this.spotLight = new THREE.SpotLight( 0xffffff, 0.5 );
+		this.spotLight = new THREE.SpotLight( 0xffffff, 1 );
 				this.spotLight.position.set( 0, 50, 0 );
 				this.spotLight.angle = Math.PI/4.2;
 				this.spotLight.penumbra = 0.2;
@@ -91,38 +92,95 @@ export default class GameView{
 		this.scene.add( this.spotLight );	
 
 		this.spotLight2 = new THREE.SpotLight( 0xFFFFFF, 10 );
-				this.spotLight2.position.set( 0, 50, 0);
-				this.spotLight2.angle = Math.PI/4.6;
-				this.spotLight2.penumbra = 0.2;
-				this.spotLight2.decay = 0.1;
-				this.spotLight2.distance = 200;
-				this.spotLight2.castShadow = true;
-				this.spotLight2.shadow.mapSize.width = 2048;
-				this.spotLight2.shadow.mapSize.height = 2048;
-				this.spotLight2.shadow.camera.near = 10;
-				this.spotLight2.shadow.camera.far = 200;
-				let targetTMP = new THREE.Object3D()	
-				targetTMP.position.set(0,0,-100);	
-				this.scene.add(targetTMP);		
-				this.spotLight2.target = targetTMP;
-				console.log(this.spotLight2)
+			this.spotLight2.position.set( 0, 50, 0);
+			this.spotLight2.angle = Math.PI/4.6;
+			this.spotLight2.penumbra = 0.2;
+			this.spotLight2.decay = 0.1;
+			this.spotLight2.distance = 200;
+			this.spotLight2.castShadow = true;
+			this.spotLight2.shadow.mapSize.width = 2048;
+			this.spotLight2.shadow.mapSize.height = 2048;
+			this.spotLight2.shadow.camera.near = 10;
+			this.spotLight2.shadow.camera.far = 200;
+			this.target = new THREE.Object3D()	
+			this.target.position.set(0,0,-100);	
+			this.scene.add(this.target);		
+			this.spotLight2.target = this.target;				
 		this.scene.add( this.spotLight2 );								
 	}
 
 	changeCameraFocus(obj){
-		//Maybe add smooth animation
-		this.cameraControls.autoRotate = false;
-		this.cameraControls.target=obj.position;		
+		this.cameraControls.autoRotate = false;		
+		let currentFocus = this.cameraControls.target.clone();		
+		let targetFocus = obj.model.position.clone();
+					
+		let tick = 0;
+		let animation = setInterval(()=>{		
+			tick+=1;
+
+			// Interpolate currentFocus towards targetFocus
+			currentFocus.lerp(targetFocus, 0.05);			
+			this.cameraControls.target = currentFocus;
+			console.log(currentFocus)
+			if(tick ==100){
+				this.cameraControls.target = obj.model.position;
+				window.clearInterval(animation);
+			}
+		},17)		
 	}
 
 	resetCameraFocus(){
 		this.cameraControls.autoRotate = true;
-	}
-	
-	renderScene(){
-		this.cameraControls.update();		
-		this.renderer.render( this.scene, this.camera);
+		let currentFocus = this.cameraControls.target.clone();		
+		let targetFocus = this.scene.position;
+				
+		let tick = 0;
+		let animation = setInterval(()=>{		
+			tick+=1;
+
+			// Interpolate currentFocus towards targetFocus
+			currentFocus.lerp(targetFocus, 0.05);			
+			this.cameraControls.target = currentFocus;
+					
+			if(tick ==100){
+				this.cameraControls.target = this.scene.position;
+				window.clearInterval(animation);
+			}
+		},17)		
 	}
 
+	hasScored(){
+		this.spotLight2.color.set(0x00FF00)
+		this.spotLight2.intensity = 20;
+		setTimeout(()=>{
+			this.spotLight2.color.set(0xFFFFFF)
+			this.spotLight2.intensity = 10;
+		},2000)
+	}
+
+	hasNotScored(){
+		this.spotLight2.color.set(0xFF0000)
+		this.spotLight2.intensity = 20;
+		setTimeout(()=>{
+			this.spotLight2.color.set(0xFFFFFF)
+			this.spotLight2.intensity = 10;
+		},2000)
+	}
+
+	rotateSpotLight(){
+		let delta = (this.target.position.z)/100
+		let tick = 0;
+		let animation = setInterval(()=>{			
+			tick+=1;
+			this.target.translateZ(-delta*4);			
+			if(tick == 50){
+				window.clearInterval(animation);
+			}
+		},25)	
+	}
 	
+	renderScene(){		
+		this.cameraControls.update();		
+		this.renderer.render( this.scene, this.camera);
+	}	
 }

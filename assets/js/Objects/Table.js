@@ -199,8 +199,12 @@ export default class CaromTable{
 
 	reset(){
 		for (let i = 0; i < this.edges.length; i++) {
-			const element = this.edges[i];
-			element.model.material.color.set(this.edgeColor);			
+			const element = this.edges[i].model;
+			element.material.color.set(this.edgeColor);	
+			for (let c = 0; c < element.children.length; c++) {
+				const line = element.children[c];
+				line.material.color.set(this.lineColor);
+			}		
 		}
 	}
 }

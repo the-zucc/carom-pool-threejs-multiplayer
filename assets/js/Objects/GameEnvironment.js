@@ -1,12 +1,12 @@
 import * as THREE from 'three'
 
 export default class GameEnvironment{
-        constructor(x,z){
-                this.model = new THREE.Object3D(0,0,0)
-                this.createModel();
-        }	
+    constructor(x,z){
+        this.model = new THREE.Object3D(0,0,0)
+        this.createModel();
+    }	
 
-        createModel(name){    
+    createModel(name){    
         //Plancher
         let floorTexture = new THREE.TextureLoader().load( require('assets/images/textures/TEST4.jpg'));
         floorTexture.repeat.set(8,8);
@@ -24,5 +24,5 @@ export default class GameEnvironment{
         
         let box = new THREE.BoxGeometry(300,100,300)
         let mat = new THREE.MeshPhongMaterial();
-        }
+    }
 }
