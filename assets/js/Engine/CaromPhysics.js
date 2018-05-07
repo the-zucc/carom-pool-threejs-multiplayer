@@ -1,44 +1,48 @@
+/************************************************************************************
+* Projet : Carombole
+* Cours  : B63 Programmation Web Avancée 
+* Auteur : Kevin Mwanangwa
+* Fichier: CaromPhysics.js 
+************************************************************************************/
 import * as THREE from 'three';
 export default class CaromPhysics{
-    constructor(){  
+    constructor(modele){  
         this.isStationary = new THREE.Vector3(0,0,0);
+        this.lowestSpeed = 0.005;
+        this.friction = 0.02;
+        this.modele = modele;       
     }
 
-     /*******************************************************************************
+    /*******************************************************************************
     * Calcul toutes le collision qui arriveront dans le frame actuel
     *******************************************************************************/
-    detectAllCollisions(balls){    
+    detectAllCollisions(){    
+        let balls = this.modele.boules;
         let n = balls.length;
         let currentFrameCollisions = [];
 		for (let i = 0; i < n; i++) {
-			const ball1 = balls[i];	
+            const ball1 = balls[i];	
+            		
+            //Optimisation pour eviter une double comparaison
+            if (i < (n-1)) {
+                for (let j = i + 1; j < n; j++) {
+                    const ball2 = balls[j];                        
 
-			//Si la boule n'est pas stationaire, ne pas calculer
-			if(true){//!ball1.velocity.equals(this.isStationary)){
+                    //Predire les collision entre les deux boules actuelles
+                    let t = this.getCollisionTime(ball1,ball2);
 
-				//Optimisation pour eviter une double comparaison
-				if (i < (n-1)) {
-					for (let j = i + 1; j < n; j++) {
-                        const ball2 = balls[j];                        
-	
-						//Predire les collision entre les deux boules actuelles
-						let t = this.getCollisionTime(ball1,ball2);
-	
-						//Si il y a une collision future ET elle se produira pendant le frame actuel
-						if (t !== null && t >= 0 && t <= 1) {
-                            console.log("Collision avec : "+ball1.model.name+" et "+ball2.model.name)
-							//Ajouter collision a la liste
-							currentFrameCollisions.push({
-                                t: t,
-                                ballA: ball1,
-                                ballB: ball2
-                            })											
-						}					
-					}
-                }	
-                //Applique une pseudo friction
-                ball1.velocity.multiplyScalar(0.99)			
-			}			
+                    //Si il y a une collision future ET elle se produira pendant le frame actuel
+                    if (t !== null && t >= 0 && t <= 1) {
+                        
+                        //Ajouter collision a la liste
+                        currentFrameCollisions.push({
+                            t: t,
+                            ballA: ball1,
+                            ballB: ball2
+                        })											
+                    }					
+                }
+            }			
         }	
         return currentFrameCollisions;
     }
@@ -48,16 +52,16 @@ export default class CaromPhysics{
     *******************************************************************************/
     getCollisionTime(ball1,ball2) {
         //Recuperer les donnes des deux balles
-        let x1 = ball1.model.position.getComponent(0);
-        let y1 = ball1.model.position.getComponent(2);
-        let vX1 = ball1.velocity.getComponent(0);
-        let vY1 = ball1.velocity.getComponent(2);
+        let x1 = ball1.model.position.x;
+        let y1 = ball1.model.position.z;
+        let vX1 = ball1.velocity.x;
+        let vY1 = ball1.velocity.z;
         let r1 = ball1.radius;
 
-        let x2 = ball2.model.position.getComponent(0);
-        let y2 = ball2.model.position.getComponent(2);
-        let vX2 = ball2.velocity.getComponent(0);
-        let vY2 = ball2.velocity.getComponent(2);
+        let x2 = ball2.model.position.x;
+        let y2 = ball2.model.position.z;
+        let vX2 = ball2.velocity.x;
+        let vY2 = ball2.velocity.z;
         let r2 = ball2.radius;
 
         //Parametres de l'equation
@@ -91,8 +95,7 @@ export default class CaromPhysics{
         qf.set(x2 + vX2, y2 + vY2);
 
         //Delta position balle 1
-        let dq = qf.sub(q0);
-
+        let dq = qf.sub(q0); 
 
         //Calculer A de la quadratique **************************
         tmp1.subVectors(dq, dp);
@@ -130,45 +133,68 @@ export default class CaromPhysics{
     /*******************************************************************************
     * Detecte les collision entre les balles et rebords de la table
     *******************************************************************************/
-    detectBallToEdgeCollisions(balls,table){
+    detectBallToEdgeCollisions(){
+        let table = this.modele.table;
+        let balls= this.modele.boules;
         let halfWidth  = table.width  / 2,
-            halfHeight = table.depth / 2;
-
+            halfHeight = table.depth / 2; 
+        let hit = null;       
+        let current = this.modele.controlleur.currentPlayer.nom;
         for(let i = 0; i < balls.length; i++){
-            const ball = balls[i];
-
-            let m = ball.model,
-                r = ball.radius
+            const ball = balls[i];  
             
+            let m = ball.model,
+                r = ball.radius                
+         
             //Verifier si la balle est hors des limites de la tables
             if (m.position.x+r > halfWidth) {
                 m.position.x = halfWidth - r;
-                ball.velocity.x *= -1 //inverser le X
+                ball.velocity.x *= -1 //inverser le X                  
+                hit = m.name == current ? table.topEdge: null;             
             }
             else if (m.position.x-r < -halfWidth) {
                 m.position.x = -halfWidth + r;
-                ball.velocity.x *= -1 //inverser le X
+                ball.velocity.x *= -1 //inverser le X               
+                hit = m.name == current ? table.bottomEdge: null;        
             }
 
             if (m.position.z+r > halfHeight) {
                 m.position.z = halfHeight - r;
                 ball.velocity.z *= -1 //inverser le Z
+                hit = m.name == current ? table.leftEdge: null;  
             }
             else if (m.position.z-r < -halfHeight) {
                 m.position.z = -halfHeight + r;
                 ball.velocity.z *= -1 //inverser le Z
-            }
+                hit = m.name == current ? table.rightEdge: null;        
+            }            
         }
+        
+        return hit;
+
     }    
 
     /*******************************************************************************
     * Applique une translation fractionnaire sur toutes les balles
     *******************************************************************************/
-    translateAllBallsByFraction(fraction,balls){
+    translateAllBallsByFraction(fraction){
+        let balls = this.modele.boules;
         let i, n, ball, ba = balls;
         for (i = 0, n = ba.length; i < n; i++) {
             ball = ba[i];
-            ball.model.position.add(ball.velocity.clone().multiplyScalar(fraction));             
+            if(!ball.velocity.equals(this.isStationary)){
+                //Deplace toutes les balles d'une fraction de leur vecteur de mouvement
+                ball.model.position.add(ball.velocity.clone().multiplyScalar(fraction));  
+                //Applique une pseudo friction
+                ball.velocity.sub(ball.velocity.clone().multiplyScalar(this.friction*fraction)) 
+                //Si vitesse trop petite, arondir a 0
+                if(Math.abs(ball.velocity.x) < this.lowestSpeed){
+                    ball.velocity.x = 0;                    
+                }
+                if(Math.abs(ball.velocity.z) < this.lowestSpeed){
+                    ball.velocity.z = 0;                    
+                }
+            }                    
         }  
     }
 
@@ -176,16 +202,16 @@ export default class CaromPhysics{
     * Calcule la collision entre deux balles
     *******************************************************************************/
     ballToBallCollision(ball1,ball2) {  
-        let x1 = ball1.model.position.getComponent(0);
-        let y1 = ball1.model.position.getComponent(2);
-        let vX1 = ball1.velocity.getComponent(0);
-        let vY1 = ball1.velocity.getComponent(2);
+        let x1 = ball1.model.position.x;
+        let y1 = ball1.model.position.z;
+        let vX1 = ball1.velocity.x;
+        let vY1 = ball1.velocity.z;
         let m1 = ball1.mass;
         
-        let x2 = ball2.model.position.getComponent(0);
-        let y2 = ball2.model.position.getComponent(2);
-        let vX2 = ball2.velocity.getComponent(0);
-        let vY2 = ball2.velocity.getComponent(2);
+        let x2 = ball2.model.position.x;
+        let y2 = ball2.model.position.z;
+        let vX2 = ball2.velocity.x;
+        let vY2 = ball2.velocity.z;
         let m2 = ball2.mass;
 
         let deltaX = x2 - x1,  deltaY = y2 - y1;
@@ -231,9 +257,24 @@ export default class CaromPhysics{
         ball1.velocity.x = vel0F.x;
         ball1.velocity.z = vel0F.y;
         ball2.velocity.x = vel1F.x;
-        ball2.velocity.z = vel1F.y;    
+        ball2.velocity.z = vel1F.y;   
+        
+       
+        //Return boule touchee par la notre
+        let current = this.modele.controlleur.currentPlayer.nom
+        console.log(current,ball1.model.name,ball2.model.name)
+        if(ball1.model.name == current){    
+            return ball2;
+        }
+        else if(ball2.model.name == current){           
+            return ball1;
+        }
+        else return null;
     }    
 
+    /*******************************************************************************
+    * Verifie si la collision est oblique/diagonale
+    *******************************************************************************/
     isObliqueBallCollision(vX0, vY0, vX1, vY1) {
         //Calcule le produit DOT (scalaire)
         let dotProduct = vX0 * vX1 + vY0 * vY1;        
@@ -250,7 +291,9 @@ export default class CaromPhysics{
         return (angle % (Math.PI/2)) !== 0;
     }
 
-
+    /*******************************************************************************
+    * Appliquer une rotation sur les coords données
+    *******************************************************************************/
     rotateCoords(x, y, sin, cos, reverse) {
         return {
             x: (reverse) ? (x * cos + y * sin) : (x * cos - y * sin),

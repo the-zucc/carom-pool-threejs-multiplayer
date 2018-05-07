@@ -3,63 +3,31 @@ import CaromTable from '../Objects/Table';
 import Joueur from'../Objects/Joueur';
 import CaromPhysics from'../Engine/CaromPhysics';
 import * as THREE from 'three';
+import GameEnvironment from '../Objects/GameEnvironment';
 
 export default class GameModel{
-	constructor(controller,gamevariant,playerList){		
-		/*
-		*
-		*/
-		this.collisionTest = false;
-		/*
-		*
-		*/
-
-		this.controller = controller;
-		this.physics = new CaromPhysics();
+	constructor(controlleur,gamevariant,playerList){			
+		this.controlleur = controlleur;		
 		this.variant = gamevariant;
+		this.isProcessing = false;
+		this.turnIsValid = true;
 		
 		this.joueurs = []
 		this.boules = []
-
-		this.mouse = new THREE.Vector2();		
-		this.raycaster = new THREE.Raycaster();
-		
-		
-		window.onmousemove = (e)=>{
-			this.mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
-			this.mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;			
-		}
-
-		//TEMPORAIRE
-		this.justHit = false;
-		this.holding = false;
-		window.onkeydown = (e)=>{
-			if(e.which == 72){
-				this.holding = true;
-			}
-		}
-		
-		window.onkeyup = (e)=>{
-			if(e.which == 72){
-				this.justHit = true;
-				setTimeout(()=>{this.justHit = false},200);
-				this.holding = false;
-			}
-		}
-	 	
-
-		
 		this.initGame(playerList)			
 	}	
 
-	initGame(playerList){
-		let bouleNeutre = 0xe31919;
-		
+	initGame(playerList){		
+		//Couleur
+		let bouleNeutre = 0x730d0d,
+			bouleJoueur1 = 0xcc9900,
+			bouleJoueur2 = 0xbfbfbf;
 
 		//Init table et boule neutre
 		this.table = new CaromTable(0,0,0);	
-		
-		this.boules.push(new Boule(25,0,null,bouleNeutre));							
+		this.environment = new GameEnvironment();		
+		this.boules.push(new Boule(25,0,null,bouleNeutre));	
+
 		//Init players
 		for(let i = 0; i<2; i++) {
 			const actuel = playerList.joueurs[i];			
@@ -67,78 +35,110 @@ export default class GameModel{
 			let position = null;
 			let isActive = null;
 			if(i == 0){
-				couleur = 0xe6ac00;
+				couleur = bouleJoueur1;
 				position = [-20,0];
-				isActive = true;
+				isActive = true;				
 			}
 			else{
-				couleur = 0xffffcc;
+				couleur = bouleJoueur2;
 				position = [-20,5];
 				isActive = false;
 			}
-
-			this.joueurs.push(new Joueur(actuel.nom,actuel.score,couleur,position,isActive));
+			this.joueurs.push(new Joueur(actuel.nom,actuel.score,couleur,position,isActive,this.controlleur));
 			this.boules.push(this.joueurs[i].boule)
-		}
-	
-		if(this.collisionTest){
-			let nbBoulesNeutres = 10;
-			//-----BALLES ADDITIONNELLES POUR TEST DE COLLISIONS-----
-			for(let i = 0; i < nbBoulesNeutres; i++){
-				let x = Math.floor(Math.random()*20 - 10);
-				let z = Math.floor(Math.random()*20 -10);
-				let boule = new Boule(x,z,"B_"+i.toString(),bouleNeutre);				
-				this.boules.push(boule);
-			}
-		}
-						
+
+			//Setup la camera pour joueur actif
+			if(isActive && actuel.nom == this.controlleur.me){					
+				this.controlleur.currentPlayer = this.joueurs[i];					
+				this.controlleur.changeCameraFocus(this.joueurs[i].boule.model);
+			}			
+		}		
+		//Le engine physique
+		this.physics = new CaromPhysics(this);				
 	}	
 
-	update(){		
-		let currentFrameTime = 1;
-		let currentFrameCollisions;
+	update(){							
+		/**
+		 * Updates le joueur actif
+		 *******************************************************/
+		if(this.controlleur.currentPlayer != null){					
+			this.controlleur.currentPlayer.update()
+		}	
 		
-		for(let j = 0; j < this.joueurs.length; j++){
-			const player = this.joueurs[j];
-			if(player.nom == this.controller.me && player.isActive){				
-				player.queue.update(this.controller.vue,this.justHit,this.holding);
+		
+		/**
+		 * Updates les boules
+		 *******************************************************/
+		if(this.isProcessing){
+			let nbStationary = 0;
+			let currentFrameTime = 1;
+			let currentFrameCollisions;		
+			//Tant que le tick actuel n'est pas termine
+			while(currentFrameTime > 0){
+				//Calculer toutes les collisions possibles
+				currentFrameCollisions = this.physics.detectAllCollisions();
+				
+				//S'il y a au moins 1 collision
+				if(currentFrameCollisions.length > 0){
+					//Trier les collisions en fonction de leur ordre d'occurence
+					currentFrameCollisions.sort( (a,b)=>{return a.t - b.t} )
+
+					//Deplacer toutes les balles en fonction du temps de la premiere collision
+					let firstCollision = currentFrameCollisions[0];
+					let t = firstCollision.t;				
+					this.physics.translateAllBallsByFraction(t);
+
+					//Calculer la collision entre les deux boules 
+					let otherBall = this.physics.ballToBallCollision(firstCollision.ballA,firstCollision.ballB);
+					if(otherBall != null){
+						this.controlleur.currentPlayer.hasHitBall(otherBall);						
+					}
+
+					//Verifier collisions avec bords de la table
+					let edge = this.physics.detectBallToEdgeCollisions()
+					if(edge != null){
+						let hasBeenHit = this.controlleur.currentPlayer.hasHitEdge(edge)
+						//Si rebord touche avant d'avoir toucher la premiere balle ou apres avoir toucher la deuxieme, invalide
+						if(this.controlleur.currentPlayer.boulesTouchees.length != 1)
+							edge.isInvalid();
+						else
+							edge.hasBeenTouched();
+					}
+
+					//Decrementer le temps ecoule
+					currentFrameTime -= t;				
+				}
+				else{
+					//Sinon , deplacement normal en fonction du temps restant au frame
+					this.physics.translateAllBallsByFraction(currentFrameTime);
+					
+					//Verifier collisions avec bords de la table
+					let edge = this.physics.detectBallToEdgeCollisions();
+					if(edge != null){
+						let hasBeenHit = this.controlleur.currentPlayer.hasHitEdge(edge)
+						//Si rebord touche avant d'avoir toucher la premiere balle ou apres avoir toucher la deuxieme, invalide
+						if(this.controlleur.currentPlayer.boulesTouchees.length != 1)
+							edge.isInvalid();
+						else
+							edge.hasBeenTouched();
+					}
+					
+					//Quitter la boucle
+					break;
+				}
+			}
+			//Compter le nombre de boules stationnaires pour arreter le tour
+			for (let i = 0; i < this.boules.length; i++) {
+				const v = this.boules[i].velocity;
+				if(v.equals(this.physics.isStationary))
+					nbStationary += 1;				
+			}
+
+			if (nbStationary == this.boules.length){
+				this.controlleur.currentPlayer.queue.pivot.position.x = this.controlleur.currentPlayer.boule.model.position.x;
+				this.controlleur.currentPlayer.queue.pivot.position.z = this.controlleur.currentPlayer.boule.model.position.z;
+				this.controlleur.currentPlayer.queue.fadeDown();//this.controlleur.endTurn();
 			}
 		}		
-
-		//Tant que le tick actuel n'est pas termine
-		while(currentFrameTime > 0){
-			//Calculer toutes les collisions possibles
-			currentFrameCollisions = this.physics.detectAllCollisions(this.boules);
-			
-			//S'il y a au moins 1 collision
-			if(currentFrameCollisions.length > 0){
-				//Trier les collisions en fonction de leur ordre d'occurence
-				currentFrameCollisions.sort( (a,b)=>{return a.t - b.t} )
-
-				//Deplacer toutes les balles en fonction du temps de la premiere collision
-				let firstCollision = currentFrameCollisions[0];
-				let t = firstCollision.t;				
-				this.physics.translateAllBallsByFraction(t,this.boules);
-
-				//Calculer la collision entre les deux boules 
-				this.physics.ballToBallCollision(firstCollision.ballA,firstCollision.ballB);
-
-				//Verifier collisions avec bords de la table
-				this.physics.detectBallToEdgeCollisions(this.boules,this.table)
-
-				//Decrementer le temps ecoule
-				currentFrameTime -= t;				
-			}
-			else{
-				//Sinon , deplacement normal en fonction du temps restant au frame
-				this.physics.translateAllBallsByFraction(currentFrameTime,this.boules);
-				
-				//Verifier collisions avec bords de la table
-				this.physics.detectBallToEdgeCollisions(this.boules,this.table);
-				
-				//Quitter la boucle
-				break;
-			}
-		}			
 	}
 }

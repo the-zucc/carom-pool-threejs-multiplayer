@@ -4,18 +4,18 @@ let OrbitControls = require('three-orbit-controls')(THREE);
 export default class GameView{
 	constructor(controller){
 		this.controller = controller;
-		this.scene = null; //Change
-		this.camera = null; //Change
-		this.renderer = null; //Change
+		this.scene = null; 
+		this.camera = null; 
+		this.renderer = null; 
 		this.table = null;
 
-		this.buildScene(this.controller.modele);			
+		this.buildScene();			
 	}
 
 /********************************************************************************* 
 *   Init WebGL Scene
 *************************************************************************************/
-	buildScene(modele){	
+	buildScene(){	
 		// Creer une scene vide
 		this.scene = new THREE.Scene();				
 		let sceneWidth = document.getElementById("carom-container").offsetWidth;
@@ -30,13 +30,22 @@ export default class GameView{
 
 		//Init Camera et lumieres
 		this.initCamera();
-		this.initLights();
+		this.initLights();		
+	}
 
+	initGameObjets(){
+		let modele = this.controller.modele;
 		//Init les objets
-		this.scene.add(modele.table.model)	
+		this.scene.add(modele.table.model);
+		this.scene.add(modele.environment.model)
 		for (let i = 0; i < modele.boules.length; i++) {
 			const element = modele.boules[i].model;
 			this.scene.add(element);			
+		}	
+		for (let i = 0; i < modele.joueurs.length; i++) {
+			const element = modele.joueurs[i];
+			this.scene.add(element.model);
+			this.scene.add(element.queue.pivot);			
 		}	
 	}
 
@@ -50,63 +59,64 @@ export default class GameView{
 		
 		//Controles
 		this.cameraControls = new OrbitControls( this.camera, this.renderer.domElement );
+		//Empeche d'aller trop bas
+		this.cameraControls.maxPolarAngle = Math.PI/2.8;
+
+		//Empeche de zoom top pres et trop loin
+		this.cameraControls.minDistance = 25;
+		this.cameraControls.maxDistance = 70;
+
 		this.cameraControls.autoRotate = true;
-		this.cameraControls.autoRotateSpeed = 1.25;
+		this.cameraControls.autoRotateSpeed = 2;
 		this.cameraControls.enableZoom = true;
-		this.cameraControls.enablePan = false;
+		this.cameraControls.enablePan = false;		
 	}
 
 	initLights(){
 		//Lumiere ambiante
-		this.scene.add(new THREE.AmbientLight( 0xffffff));
+		this.scene.add(new THREE.AmbientLight( 0xFFFFFF, 1.25));
 
 		//Lumieres en haut de la table
-		let spotLight = new THREE.SpotLight( 0xffffff, 1 );
-				spotLight.position.set( 20, 60, 0 );
-				spotLight.angle = Math.PI / 8;
-				spotLight.penumbra = 0.4;
-				spotLight.decay = 0.5;
-				spotLight.distance = 80;
-				spotLight.castShadow = true;
-				spotLight.shadow.mapSize.width = 1024;
-				spotLight.shadow.mapSize.height = 1024;
-				spotLight.shadow.camera.near = 0.5;
-				spotLight.shadow.camera.far = 500;
+		this.spotLight = new THREE.SpotLight( 0xffffff, 0.5 );
+				this.spotLight.position.set( 0, 50, 0 );
+				this.spotLight.angle = Math.PI/4.2;
+				this.spotLight.penumbra = 0.2;
+				this.spotLight.decay = 0.7;
+				this.spotLight.distance = 80;
+				this.spotLight.castShadow = true;
+				this.spotLight.shadow.mapSize.width = 2048;
+				this.spotLight.shadow.mapSize.height = 2048;
+				this.spotLight.shadow.camera.near = 10;
+				this.spotLight.shadow.camera.far = 100;			
+		this.scene.add( this.spotLight );	
 
-				//Target
-				let target1 = new THREE.Object3D();
-				target1.position.set(20,0,0)
-				this.scene.add(target1);
-				spotLight.target = target1;	
-
-		let spotLight2 = new THREE.SpotLight( 0xffffff, 1 );
-				//Params
-				spotLight2.position.set( -20, 60, 0 );
-				spotLight2.angle = Math.PI / 8;
-				spotLight2.penumbra = 0.4;
-				spotLight2.decay = 0.5;
-				spotLight2.distance = 80;
-				spotLight2.castShadow = true;
-				spotLight2.shadow.mapSize.width = 1024;
-				spotLight2.shadow.mapSize.height = 1024;
-				spotLight2.shadow.camera.near = 0.5;
-				spotLight2.shadow.camera.far = 500;
-				
-				//Target
-				let target2 = new THREE.Object3D();
-				target2.position.set(-20,0,0)
-				this.scene.add(target2);
-				spotLight2.target = target2;
-				
-		this.scene.add( spotLight );		
-		this.scene.add( spotLight2 );
-		
-
-
+		this.spotLight2 = new THREE.SpotLight( 0xFFFFFF, 10 );
+				this.spotLight2.position.set( 0, 50, 0);
+				this.spotLight2.angle = Math.PI/4.6;
+				this.spotLight2.penumbra = 0.2;
+				this.spotLight2.decay = 0.1;
+				this.spotLight2.distance = 200;
+				this.spotLight2.castShadow = true;
+				this.spotLight2.shadow.mapSize.width = 2048;
+				this.spotLight2.shadow.mapSize.height = 2048;
+				this.spotLight2.shadow.camera.near = 10;
+				this.spotLight2.shadow.camera.far = 200;
+				let targetTMP = new THREE.Object3D()	
+				targetTMP.position.set(0,0,-100);	
+				this.scene.add(targetTMP);		
+				this.spotLight2.target = targetTMP;
+				console.log(this.spotLight2)
+		this.scene.add( this.spotLight2 );								
 	}
 
 	changeCameraFocus(obj){
+		//Maybe add smooth animation
+		this.cameraControls.autoRotate = false;
 		this.cameraControls.target=obj.position;		
+	}
+
+	resetCameraFocus(){
+		this.cameraControls.autoRotate = true;
 	}
 	
 	renderScene(){

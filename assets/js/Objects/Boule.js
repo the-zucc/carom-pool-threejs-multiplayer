@@ -8,11 +8,10 @@ export default class Boule{
 		this.y = (this.radius*1.5);
 		this.proprietaire = prop;
 		this.couleur = coul;	
-		this.mass = 1;
-
-		//TEST TEST TEST		
-		this.velocity = new THREE.Vector3(0,0,0)//(Math.random(),0,Math.random());
+		this.mass = 1;		
+		this.velocity = new THREE.Vector3(0,0,0);		
 		
+		//Si pas de proprio, boule neutre
 		if(this.proprietaire != undefined)
 			this.createModel(prop.nom);
 		else
@@ -21,7 +20,8 @@ export default class Boule{
 
 	createModel(name){
 		let geometry = new THREE.SphereBufferGeometry(this.radius,  25 , 25);
-		let material = new THREE.MeshPhongMaterial({ color:this.couleur ,  transparent: false,  opacity: 1  });
+		let material = new THREE.MeshPhongMaterial({ color:this.couleur ,  transparent: false,  opacity: 1  , shininess: 60});
+		material.needsUpdate = true;
 		this.model = new THREE.Mesh( geometry, material );
 		this.model.name = name;
 		this.model.castShadow = true;
