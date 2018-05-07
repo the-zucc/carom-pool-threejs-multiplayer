@@ -24,7 +24,7 @@ const store = new Vuex.Store({
     service("parties"),
     service("coups"),
     service("users"),
-    auth({ userService: "users", store: { publicPages: ["login"] } })
+    auth({ userService: "users", state: { publicPages: ["login"] } })
   ]
 });
 

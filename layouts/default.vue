@@ -1,26 +1,26 @@
 <template>
   <v-app dark>
-    <v-navigation-drawer dark color="primary" v-if="this.$store.state.auth.payload" app fixed :clipped="$vuetify.breakpoint.lgAndUp" v-model="drawer">
+    <v-navigation-drawer dark color="primary" v-if="payload" app fixed :clipped="$vuetify.breakpoint.lgAndUp" v-model="drawer">
         <v-list class="pa-1">
-        <v-list-tile v-if="mini" @click.stop="mini = !mini">
-          <v-list-tile-action>
-            <v-icon>chevron_right</v-icon>
-          </v-list-tile-action>
-        </v-list-tile>
-        <v-list-tile avatar tag="div">
-          <v-list-tile-avatar>
-            <img src="https://randomuser.me/api/portraits/men/85.jpg" >
-          </v-list-tile-avatar>
-          <v-list-tile-content>
-            <v-list-tile-title>JM DESCHAMPS</v-list-tile-title>
-          </v-list-tile-content>
-          <v-list-tile-action>
-            <v-btn icon @click.stop="drawer = !drawer">
-              <v-icon>chevron_left</v-icon>
-            </v-btn>
-          </v-list-tile-action>
-        </v-list-tile>
-      </v-list>
+          <v-list-tile v-if="mini" @click.stop="mini = !mini">
+            <v-list-tile-action>
+              <v-icon>chevron_right</v-icon>
+            </v-list-tile-action>
+          </v-list-tile>
+          <v-list-tile avatar tag="div">
+            <v-list-tile-avatar>
+              <img src="https://randomuser.me/api/portraits/men/85.jpg" >
+            </v-list-tile-avatar>
+            <v-list-tile-content>
+              <v-list-tile-title>JM DESCHAMPS</v-list-tile-title>
+            </v-list-tile-content>
+            <v-list-tile-action>
+              <v-btn icon @click.stop="drawer = !drawer">
+                <v-icon>chevron_left</v-icon>
+              </v-btn>
+            </v-list-tile-action>
+          </v-list-tile>
+        </v-list>
 
        <v-list class="pt-0" dark>
         <v-divider></v-divider>
@@ -52,10 +52,10 @@
               :key="game.title" :prepend-icon="game.action" no-action >
               <v-list-tile slot="activator">
                 <v-list-tile-content>
-                  <v>{{ game.title }}</v>
+                  {{ game.title }}
                 </v-list-tile-content>
               </v-list-tile>
-              <v-list-tile v-for="subItem in game.stats" :key="subItem.title" @click="">
+              <v-list-tile v-for="subItem in game.stats" :key="subItem.title">
                 <v-list-tile-action>
                   <v-icon>{{ subItem.icon }}</v-icon>
                 </v-list-tile-action>
@@ -90,7 +90,7 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
+import { mapActions, mapState, mapGetters } from "vuex";
 export default {
   data() {
     return {
@@ -98,31 +98,34 @@ export default {
       drawer: true,
       fixed: false,
       stats: [
-        { title: '-Nombre de coups', number : '10', icon: 'bubble_chart' },
-        { title: '-Nombre de carom', number : '1', icon: 'timeline' }
+        { title: "-Nombre de coups", number: "10", icon: "bubble_chart" },
+        { title: "-Nombre de carom", number: "1", icon: "timeline" }
       ],
       games: [
         {
-          action: 'local_activity',
-          title: 'Partie 1',
+          action: "local_activity",
+          title: "Partie 1",
           stats: [
-            { title: 'Nombre de coups', number : '10', icon: 'bubble_chart' },
-            { title: 'Nombre de carom', number : '1', icon: 'timeline' }
+            { title: "Nombre de coups", number: "10", icon: "bubble_chart" },
+            { title: "Nombre de carom", number: "1", icon: "timeline" }
           ]
-        },
+        }
       ],
-      miniVariant: false,
+      mini: false,
       right: true,
       rightDrawer: false,
       title: "Billard Carom"
     };
   },
   methods: {
-    ...mapActions('auth', ['logout']),
-    logoutAndBackHome () {
+    ...mapActions("auth", ["logout"]),
+    logoutAndBackHome() {
       this.logout();
       this.$router.push("/login");
     }
+  },
+  computed: {
+    ...mapState("auth", ["payload"])
   }
 };
 </script>
