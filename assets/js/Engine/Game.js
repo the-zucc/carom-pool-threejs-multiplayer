@@ -167,7 +167,7 @@ class Controller{
 	*********************************************************************/
 	getForceInput(){
 		//Si c'est notre tour
-		if(this.currentPlayer.nom == this.me){
+		if(true){//this.currentPlayer.nom == this.me){
 			if(this.distanceDown != null){
 				if(this.distanceDown > 0 && this.distanceDown < this.maxDistance){
 					let percentage = this.distanceDown/this.maxDistance;
@@ -188,7 +188,7 @@ class Controller{
 	*********************************************************************/
 	justShot(){
 		//Si c'est notre tour
-		if(this.currentPlayer.nom == this.me){
+		if(true){//this.currentPlayer.nom == this.me){
 			if(this.justLaunched){
 				this.justLaunched = false;
 				return true;
@@ -220,7 +220,7 @@ class Controller{
 	*********************************************************************/
 	getCueAngle(){
 		//Si c'est notre tour
-		if(this.currentPlayer.nom == this.me){	
+		if(true){//this.currentPlayer.nom == this.me){	
 			return this.vue.cameraControls.getAzimuthalAngle() + Math.PI/2;
 		}
 		//Sinon, recuperer infos du serveur pour le deuxieme joueur
@@ -246,7 +246,6 @@ class Controller{
 		this.vue.renderScene()
 	}
 }
-
 
 export default {
 	startGame,
