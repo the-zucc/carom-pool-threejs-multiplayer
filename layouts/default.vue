@@ -79,11 +79,11 @@
        <v-btn flat v-if="this.$store.state.auth.payload" v-on:click="logoutAndBackHome()">Logout</v-btn>
     </v-toolbar>
     <v-content>
-      <v-container color="primary" fluid fill-height>
+      <v-container style="padding:0px;" color="primary" fluid fill-height>
         <nuxt />
       </v-container>
     </v-content>
-    <v-footer :fixed="fixed" app>
+    <v-footer id="footer" :fixed="fixed" app>
       <span>&copy; Synthèse WEB 2018</span>
     </v-footer>
   </v-app>

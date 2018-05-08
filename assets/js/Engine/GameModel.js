@@ -64,6 +64,14 @@ export default class GameModel{
 				},2500)		
 			}			
 		}		
+
+		/*for (let i = -20; i < 20; i+=4) {			
+			for (let j = -40; j < 40; j+=4) {
+				let tmp = new Boule(j,i,null,bouleNeutre);
+				//tmp.velocity.set(Math.random(),0,Math.random());
+				this.boules.push(tmp)				
+			}			
+		}*/
 		//Le engine physique
 		this.physics = new CaromPhysics(this);				
 	}	
@@ -115,10 +123,10 @@ export default class GameModel{
 					
 					//Si balle touchee *******
 					if(otherBall != null ){
-						let ballHasBeenHit = this.controlleur.currentPlayer.hasHitBall(otherBall);
+						this.controlleur.currentPlayer.hasHitBall(otherBall);
 						
-						//Si boule a deja ete touchee, invalide
-						if(ballHasBeenHit){
+						//Au premier tir, verifier qu'on a touché la boule rouge
+						if(this.controlleur.currentTurn == 1 && otherBall.model.nom != "NEUTRAL" && !hasHitFirstBall){
 							this.turnIsValid = false;
 						}
 						//Si on vient de frapper la deuxieme boule sans avoir touché assez de bandes, invalide
@@ -131,15 +139,8 @@ export default class GameModel{
 					let edge = this.physics.detectBallToEdgeCollisions()
 					if(edge != null){
 						this.controlleur.currentPlayer.hasHitEdge(edge);
-						nbBandes = currentEdges.length;
-												
-						//Si rebord touche avant d'avoir toucher la premiere balle ou apres avoir toucher la deuxieme, invalide
-						if(!hasHitFirstBall){
-							edge.isInvalid();
-							this.turnIsValid = false;
-						}
-						else
-							edge.hasBeenTouched();
+						nbBandes = currentEdges.length;	
+						edge.hasBeenTouched();
 					}
 
 					//Decrementer le temps ecoule
@@ -153,15 +154,8 @@ export default class GameModel{
 					let edge = this.physics.detectBallToEdgeCollisions();
 					if(edge != null){
 						this.controlleur.currentPlayer.hasHitEdge(edge);
-						nbBandes = currentEdges.length;
-												
-						//Si rebord touche avant d'avoir toucher la premiere balle ou apres avoir toucher la deuxieme, invalide
-						if(!hasHitFirstBall){
-							edge.isInvalid();
-							this.turnIsValid = false;
-						}
-						else
-							edge.hasBeenTouched();
+						nbBandes = currentEdges.length;						
+						edge.hasBeenTouched();
 					}
 					
 					//Quitter la boucle

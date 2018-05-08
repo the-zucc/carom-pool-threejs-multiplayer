@@ -11,7 +11,7 @@ export default class Boule{
 		this.x = x;		
 		this.z = z;
 		this.radius = 1;
-		this.y = (this.radius*1.5);
+		this.y = (this.radius+0.505);
 		this.proprietaire = prop;
 		this.couleur = coul;	
 		this.mass = 1;		

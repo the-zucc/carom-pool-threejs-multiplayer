@@ -246,16 +246,5 @@ class Edge{
 			const element = this.model.children[i];
 			element.material.color.set(this.edgeHitValidLine);		
 		}
-	}
-
-	/*******************************************************************************
-    * Change de couleur si invalide
-    *******************************************************************************/
-	isInvalid(){
-		this.model.material.color.set(this.edgeHitInvalid);
-		for (let i = 0; i < this.model.children.length; i++) {
-			const element = this.model.children[i];
-			element.material.color.set(this.edgeHitInvalidLine);		
-		}
-	}
+	}	
 }

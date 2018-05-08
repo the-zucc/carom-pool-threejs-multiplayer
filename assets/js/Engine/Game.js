@@ -14,9 +14,9 @@ let controller = null;
 * Initialisation du jeu
 *********************************************************************/
 function startGame(gameVariant,me,playerList){		
-	let playerListTMP = '{"joueurs":[{"nom":"Kevin Mwa","score":"420" },{"nom":"Laurier L-G","score":"1337"}]}';
+	let playerListTMP = '{"joueurs":[{"nom":"JM Deschamps","score":"420" },{"nom":"Laurier L-G","score":"1337"}]}';
 	let Json = JSON.parse(playerListTMP);	
-	controller = new Controller("Kevin Mwa",gameVariant,Json);	
+	controller = new Controller("JM Deschamps",gameVariant,Json);	
 
 	startGameLoop();	
 }
