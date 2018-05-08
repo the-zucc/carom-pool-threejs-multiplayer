@@ -12,7 +12,7 @@
               <img src="https://randomuser.me/api/portraits/men/85.jpg" >
             </v-list-tile-avatar>
             <v-list-tile-content>
-              <v-list-tile-title>JM DESCHAMPS</v-list-tile-title>
+              <v-list-tile-title v-if="user">{{user.name}}</v-list-tile-title>
             </v-list-tile-content>
             <v-list-tile-action>
               <v-btn icon @click.stop="drawer = !drawer">
@@ -125,7 +125,10 @@ export default {
     }
   },
   computed: {
-    ...mapState("auth", ["payload"])
+    ...mapState("auth", ["payload"]),
+    ...mapGetters("users", {
+      user: "current"
+    })
   }
 };
 </script>
