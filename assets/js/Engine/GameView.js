@@ -26,7 +26,7 @@ export default class GameView{
 		// Creer une scene vide
 		this.scene = new THREE.Scene();				
 		let sceneWidth = document.getElementById("carom-container").offsetWidth;
-		let sceneHeight = document.getElementById("carom-container").offsetHeight;		
+		let sceneHeight = document.getElementById("carom-container").offsetHeight-document.getElementById("footer").offsetHeight-2;		
 		
 		// Init le renderer 
 		this.renderer = new THREE.WebGLRenderer({ antialias: true , alpha: true	});	
@@ -90,10 +90,10 @@ export default class GameView{
     *******************************************************************************/
 	initLights(){
 		//Lumiere ambiante
-		this.scene.add(new THREE.AmbientLight( 0xFFFFFF, 1.25));
+		this.scene.add(new THREE.AmbientLight( 0xFFFFFF, 0.75));
 
 		//Lumieres en haut de la table
-		this.spotLight = new THREE.SpotLight( 0xffffff, 1 );
+		this.spotLight = new THREE.SpotLight( 0xffffff, 1.75 );
 				this.spotLight.position.set( 0, 50, 0 );
 				this.spotLight.angle = Math.PI/4.2;
 				this.spotLight.penumbra = 0.2;
@@ -106,19 +106,19 @@ export default class GameView{
 				this.spotLight.shadow.camera.far = 100;			
 		this.scene.add( this.spotLight );	
 
-		this.spotLight2 = new THREE.SpotLight( 0xFFFFFF, 10 );
-			this.spotLight2.position.set( 0, 50, 0);
-			this.spotLight2.angle = Math.PI/4.6;
+		this.spotLight2 = new THREE.SpotLight( 0xFFFFFF, 2 );
+			this.spotLight2.position.set( 0, 70, 0);
+			this.spotLight2.angle = Math.PI/3;
 			this.spotLight2.penumbra = 0.2;
 			this.spotLight2.decay = 0.1;
-			this.spotLight2.distance = 200;
+			this.spotLight2.distance = 280;
 			this.spotLight2.castShadow = true;
 			this.spotLight2.shadow.mapSize.width = 2048;
 			this.spotLight2.shadow.mapSize.height = 2048;
 			this.spotLight2.shadow.camera.near = 10;
 			this.spotLight2.shadow.camera.far = 200;
 			this.target = new THREE.Object3D()	
-			this.target.position.set(0,0,-100);	
+			this.target.position.set(0,0,-220);	
 			this.scene.add(this.target);		
 			this.spotLight2.target = this.target;				
 		this.scene.add( this.spotLight2 );								
@@ -174,10 +174,10 @@ export default class GameView{
     *******************************************************************************/
 	hasScored(){
 		this.spotLight2.color.set(0x00FF00)
-		this.spotLight2.intensity = 20;
+		this.spotLight2.intensity = 4;
 		setTimeout(()=>{
 			this.spotLight2.color.set(0xFFFFFF)
-			this.spotLight2.intensity = 10;
+			this.spotLight2.intensity = 2;
 		},2000)
 	}
 
@@ -186,10 +186,10 @@ export default class GameView{
     *******************************************************************************/
 	hasNotScored(){
 		this.spotLight2.color.set(0xFF0000)
-		this.spotLight2.intensity = 20;
+		this.spotLight2.intensity = 4;
 		setTimeout(()=>{
 			this.spotLight2.color.set(0xFFFFFF)
-			this.spotLight2.intensity = 10;
+			this.spotLight2.intensity = 2;
 		},2000)
 	}
 

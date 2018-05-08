@@ -18,8 +18,8 @@ export default class Queue{
 			this.fadeDown();
 		}
 			
-		this.baseDistance = 11.65;	
-		this.powerBarLength = 6;		
+		this.baseDistance = 11+(this.proprietaire.boule.radius);	
+		this.powerBarLength = 8;		
 		this.force = 0.01; //Three JS doesn't like null lengths
 		this.isCharging = false;		
 
@@ -37,9 +37,8 @@ export default class Queue{
 		this.model.position.set(0,this.baseDistance,0);			
 		this.pivot.rotateZ(Math.PI/2.1)
 
-		//Corps principal
-		let image = require('assets/images/textures/TEST2.jpg');	
-		let texture = new THREE.TextureLoader().load( image);	
+		//Corps principal		
+		let texture = new THREE.TextureLoader().load( require('assets/images/textures/TEST2.jpg') );	
 		texture.wrapS = THREE.RepeatWrapping;
 		texture.wrapT = THREE.RepeatWrapping;
 		let geometry = new THREE.CylinderBufferGeometry(0.35,0.2,20, 15 , 15);
@@ -60,8 +59,11 @@ export default class Queue{
 		cue.add(bout)
 
 		//Embout Arriere
+		let manche = new THREE.TextureLoader().load( require('assets/images/textures/MancheQueue.png') );	
+		manche.wrapS = THREE.RepeatWrapping;
+		manche.wrapT = THREE.RepeatWrapping;	
 		let geometry3 = new THREE.CylinderBufferGeometry(0.35,0.35,4.5, 15 , 15);		
-		let material3 = new THREE.MeshPhongMaterial({ color: 0x1a1a1a ,  transparent: false,  opacity: 1  });	
+		let material3 = new THREE.MeshPhongMaterial({map:manche});	
 		let bout2 = new THREE.Mesh( geometry3, material3 );	
 		bout2.position.set(0, 12.25 ,0);
 		bout2.castShadow = true;
