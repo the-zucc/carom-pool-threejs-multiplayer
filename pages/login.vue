@@ -10,8 +10,8 @@
           <v-form>
             <v-text-field prepend-icon="person" name="email" label="Email" type="text" v-model="email"></v-text-field>
             <v-text-field v-if="register == true" prepend-icon="person" name="email" label="Nom" type="text" v-model="nom"></v-text-field>
-            <v-text-field prepend-icon="lock" name="password" label="Password" type="password" v-model="password"></v-text-field>
-            <v-text-field v-if="register == true" prepend-icon="lock" name="password" label="Password confirmation" type="password" v-model="password2"></v-text-field>
+            <v-text-field prepend-icon="lock" name="password" label="Password" type="password" v-model="password" v-on:keypress.enter="login(email,password)"></v-text-field>
+            <v-text-field v-if="register == true" prepend-icon="lock" name="password" label="Password confirmation" type="password" v-model="password2" v-on:keypress.enter="submit(email,password, nom)"></v-text-field>
           </v-form>
         </v-card-text>
         <v-card-actions>
@@ -46,8 +46,9 @@ export default {
       snackbar: false
     };
   },
-  methods: {
+  methods: { 
     toggleRegister() {
+  
       (this.register)? this.register = false :  this.register = true;
     },
     submit(email, password, name) {
