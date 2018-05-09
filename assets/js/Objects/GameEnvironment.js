@@ -32,14 +32,14 @@ export default class GameEnvironment{
         this.model.castShadow = true;
         this.model.receiveShadow = true;  
 
-        let table1 = new CaromTable(0,0,90);
-        let table2 = new CaromTable(0,0,-90);
-        let table3 = new CaromTable(-120,0,90);
-        let table4 = new CaromTable(120,0,90);
-        let table5 = new CaromTable(120,0,-90);
-        let table6 = new CaromTable(-120,0,-90);
-        let table7 = new CaromTable(120,0,0);
-        let table8 = new CaromTable(-120,0,0);
+        let table1 = new CaromTable(0,0,110);
+        let table2 = new CaromTable(0,0,-110);
+        let table3 = new CaromTable(-150,0,110);
+        let table4 = new CaromTable(150,0,110);
+        let table5 = new CaromTable(150,0,-110);
+        let table6 = new CaromTable(-150,0,-110);
+        let table7 = new CaromTable(150,0,0);
+        let table8 = new CaromTable(-150,0,0);
         
         this.model.add(table1.model);
         this.model.add(table2.model);

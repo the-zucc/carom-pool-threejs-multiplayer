@@ -22,7 +22,7 @@ export default class Queue{
 			
 		this.baseDistance = 11+(this.proprietaire.boule.radius);	
 		this.powerBarLength = 8;		
-		this.force = 0.001; //Three JS doesn't like null lengths
+		this.force = 0.01; //Three JS doesn't like null lengths - Kevin
 		this.maxForce = 5;	
 
 		this.createModel(prop.nom);
@@ -100,6 +100,7 @@ export default class Queue{
 		baseTop.castShadow = true;
 		base.add(baseTop)		
 
+		//Barre Rouge
 		let geometry6 = new THREE.CylinderBufferGeometry(0.25,0.25,this.force, 15 , 15);	
 		this.barMaterial = new THREE.MeshPhongMaterial({ color: 0xFF0000,  transparent: true,  opacity: 0.8  });
 		this.powerBar = new THREE.Mesh( geometry6, this.barMaterial );	
@@ -122,7 +123,7 @@ export default class Queue{
 		this.force = this.maxForce*percentage;
 		let newGeo = new THREE.CylinderBufferGeometry(0.25,0.25,powerBarPercentage, 15 , 15);
 		this.powerBar.geometry = newGeo;
-		this.powerBar.position.set(0,(this.force/2)+this.baseThickness/2,0);		
+		this.powerBar.position.set(0,(powerBarPercentage/2)+this.baseThickness/2,0);		
 		
 		//Update le raycaster pour l'helper de direction
 		this.direction.set(this.force,0,0);
@@ -134,7 +135,7 @@ export default class Queue{
 			let intersectWith = this.rayCaster.intersectObjects(this.proprietaire.controlleur.modele.meshList)[0];			
 			if(intersectWith != undefined){				
 				let distIntersection = intersectWith.distance;
-				this.helper.setLength(distIntersection)				
+				this.helper.setLength(distIntersection)		
 			}
 		}
 		//Update la position
@@ -169,8 +170,8 @@ export default class Queue{
     * Cacher la queue
     *******************************************************************************/
 	fadeUp(){
-		let tick = 0;		
-		this.helper = new THREE.Object3D();
+		let tick = 0;	
+		this.helper.setLength(this.proprietaire.boule.radius)					
 		let animationUp = setInterval(()=>{			
 			tick+=1;
 			this.pivot.position.y += 0.45;			
@@ -189,13 +190,23 @@ export default class Queue{
 			tick+=1;			
 			this.pivot.position.y -= 0.45;
 			if(tick == 180){
-				this.helper = new THREE.ArrowHelper(new THREE.Vector3(0,-1,0),new THREE.Vector3(0,0,0),20);				
-				this.pivot.add(this.helper)
-				this.helper.rotateZ(Math.PI/4)	
-				console.log(this.helper)
+				if(this.helper == undefined){
+					this.initHelper(5);
+					
+				}				
 				this.isActive = true;
 				window.clearInterval(animationDown);
 			}
 		},17)		
+	}
+
+	initHelper(len){
+		let dir = new THREE.Vector3(0,-1,0);
+		let pos = new THREE.Vector3(0,0,0);
+		let coul = this.proprietaire.couleur;
+		let r = this.proprietaire.boule.radius;
+		this.helper = new THREE.ArrowHelper(dir,pos,len,coul,r,r);	
+		this.pivot.add(this.helper)
+		this.helper.rotateZ(-0.08)			
 	}
 }

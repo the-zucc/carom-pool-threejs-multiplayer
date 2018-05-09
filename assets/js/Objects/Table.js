@@ -43,7 +43,7 @@ export default class CaromTable{
 		let marginPos = 0.5;
 		let marginEdge = 2;
 		//LEFT,RIGHT ******************************************************************************
-		let sideEdgesGeo = new THREE.BoxGeometry( this.width+marginEdge, this.height/2, this.height/2 );		
+		let sideEdgesGeo = new THREE.BoxGeometry( this.width+marginEdge, this.height/1.8, this.height/2 );		
 		
 		let leftEdgeMesh =  new THREE.Mesh( sideEdgesGeo, edgeMaterial.clone() );
 		leftEdgeMesh.name = "Left Edge";
@@ -59,7 +59,7 @@ export default class CaromTable{
 		this.leftEdge = new Edge(leftEdgeMesh,new THREE.Vector3(1,0,0));
 
 		//TOP,BOTTOM *******************************************************************************
-		let topEdgesGeo = new THREE.BoxGeometry( this.height/2, this.height/2, this.depth+marginEdge );		
+		let topEdgesGeo = new THREE.BoxGeometry( this.height/2, this.height/1.8, this.depth+marginEdge );		
 		
 		let topEdgeMesh =  new THREE.Mesh( topEdgesGeo, edgeMaterial.clone() );
 		topEdgeMesh.name = "Top Edge";
