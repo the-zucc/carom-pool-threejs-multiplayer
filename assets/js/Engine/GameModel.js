@@ -20,7 +20,8 @@ export default class GameModel{
 		
 		this.joueurs = []
 		this.boules = []
-		this.initGame(playerList)			
+		this.initGame(playerList)	
+		this.initMeshList();		
 	}	
 
 	/*******************************************************************************
@@ -76,6 +77,19 @@ export default class GameModel{
 		this.physics = new CaromPhysics(this);				
 	}	
 
+	initMeshList(){
+		this.meshList = [];
+		this.meshList.push(this.table.topEdge.model)
+		console.log(this.table.topEdge.model)
+		this.meshList.push(this.table.bottomEdge.model)
+		this.meshList.push(this.table.leftEdge.model)
+		this.meshList.push(this.table.rightEdge.model)
+		for (let b = 0; b < this.boules.length; b++) {
+			const boule = this.boules[b].model;
+			this.meshList.push(boule)			
+		}
+	}
+
 	/*******************************************************************************
     * Boucle de jeu
     *******************************************************************************/
@@ -92,19 +106,20 @@ export default class GameModel{
 		 *******************************************************/
 		if(this.isProcessing){
 			let nbStationary = 0;
-			let currentFrameTime = 1;
+			let currentFrameTime = 1; //Duree du frame actuel
 			let currentFrameCollisions;
 
 			let currentBalls = this.controlleur.currentPlayer.boulesTouchees;	
 			let currentEdges = this.controlleur.currentPlayer.bandesTouchees;
-			let hasHitFirstBall, nbBandes;
+			let hasHitFirstBall, hasHitSecondBall, nbBandes;
 
 			//Tant que le FRAME actuel n'est pas termine
 			while(currentFrameTime > 0){
 				//Variables du joueurs actif				
 				hasHitFirstBall = currentBalls.length >=1 ? true : false;
-				nbBandes = currentEdges.length;
-			
+				hasHitSecondBall = currentBalls.length == 2 ? true : false;
+				nbBandes = currentEdges.length; //Nb de bandes touchees apres avoir touche la premiere boule
+				
 				//Calculer toutes les collisions possibles
 				currentFrameCollisions = this.physics.detectAllCollisions();
 				
@@ -122,9 +137,8 @@ export default class GameModel{
 					let otherBall = this.physics.ballToBallCollision(firstCollision.ballA,firstCollision.ballB);
 					
 					//Si balle touchee *******
-					if(otherBall != null ){
-						this.controlleur.currentPlayer.hasHitBall(otherBall);
-						
+					if(otherBall != null ){		
+						this.controlleur.currentPlayer.hasHitBall(otherBall);				
 						//Au premier tir, verifier qu'on a touché la boule rouge
 						if(this.controlleur.currentTurn == 1 && otherBall.model.nom != "NEUTRAL" && !hasHitFirstBall){
 							this.turnIsValid = false;
@@ -132,14 +146,17 @@ export default class GameModel{
 						//Si on vient de frapper la deuxieme boule sans avoir touché assez de bandes, invalide
 						else if(hasHitFirstBall && nbBandes < this.nbBandesMin){
 							this.turnIsValid = false;
-						}
+						}					
 					}
 
 					//Verifier collisions avec bords de la table
 					let edge = this.physics.detectBallToEdgeCollisions()
 					if(edge != null){
-						this.controlleur.currentPlayer.hasHitEdge(edge);
-						nbBandes = currentEdges.length;	
+						//Si premiere balle deja touchee et deuxieme pas encore touchee, incrementer 
+						if(hasHitFirstBall && !hasHitSecondBall){
+							this.controlleur.currentPlayer.hasHitEdge(edge);
+							nbBandes = currentEdges.length;	
+						}
 						edge.hasBeenTouched();
 					}
 
@@ -153,10 +170,14 @@ export default class GameModel{
 					//Verifier collisions avec bords de la table
 					let edge = this.physics.detectBallToEdgeCollisions();
 					if(edge != null){
-						this.controlleur.currentPlayer.hasHitEdge(edge);
-						nbBandes = currentEdges.length;						
+						//Si premiere balle deja touchee et deuxieme pas encore touchee, incrementer 
+						if(hasHitFirstBall && !hasHitSecondBall){
+							this.controlleur.currentPlayer.hasHitEdge(edge);
+							nbBandes = currentEdges.length;	
+						}
 						edge.hasBeenTouched();
 					}
+
 					
 					//Quitter la boucle
 					break;
@@ -169,11 +190,22 @@ export default class GameModel{
 					nbStationary += 1;				
 			}
 
+			//FIN DU TOUR ******************************************************************************
 			if (nbStationary == this.boules.length){
 				//Verification finale si on a pas au moins toucher les deux boules, invalide
 				if(currentBalls.length != 2)
 					this.turnIsValid = false;
 
+				/*******IF DEBUGGING*******/
+				if(this.controlleur.isDebugging){
+					let endLog = "[ DEBUG ]";
+					endLog+="  TOUR : "+this.controlleur.currentTurn;
+					endLog+="  ||  JOUEUR : "+this.controlleur.currentPlayer.nom;					
+					endLog+="  ||  BANDES : "+nbBandes+"/"+this.nbBandesMin;
+					endLog+="  ||  BALLES : "+currentBalls.length+"/2";
+					endLog+= "  ||  CAROM ?: "+(this.turnIsValid? "Oui" : "Non");
+					console.log(endLog);
+				}
 				this.controlleur.endTurn(this.turnIsValid)				
 			}
 		}		

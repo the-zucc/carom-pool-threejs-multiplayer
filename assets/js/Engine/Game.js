@@ -6,6 +6,7 @@
 ************************************************************************************/
 import GameModel from './GameModel';
 import GameView from './GameView';
+import Stats from '../Libs/Stats';
 /*********************************************************************
 * Variables
 *********************************************************************/
@@ -13,7 +14,7 @@ let controller = null;
 /*********************************************************************
 * Initialisation du jeu
 *********************************************************************/
-function startGame(gameVariant,me,playerList){		
+function startGame(gameVariant,me,playerList){	
 	let playerListTMP = '{"joueurs":[{"nom":"JM Deschamps","score":"420" },{"nom":"Laurier L-G","score":"1337"}]}';
 	let Json = JSON.parse(playerListTMP);	
 	controller = new Controller("JM Deschamps",gameVariant,Json);	
@@ -24,11 +25,8 @@ function startGame(gameVariant,me,playerList){
 /*********************************************************************
 * GameLoop
 *********************************************************************/
-function startGameLoop(){
-	//let tmp = performance.now()
-
+function startGameLoop(){	
 	controller.tick();
-	//console.log("This tick took "+(performance.now() - tmp)+" [B]illiseconds ")
 	
 	//Callback function
 	requestAnimationFrame(startGameLoop);	
@@ -39,47 +37,62 @@ function startGameLoop(){
 *********************************************************************/
 class Controller{
 	constructor(me,gameVariant,playerList){	
-		this.me = me;	
-		this.currentPlayer = null;
+		// Debug
+		this.isDebugging = false;
+		this.domContainer = document.getElementById("carom-container");
+		this.stats = new Stats();
+		this.stats.showPanel( 1 );
+		document.onkeypress = (e)=>{
+			//D : Toggle le debugging
+			if(e.which == 100){
+				this.isDebugging = !this.isDebugging;
+				if(this.isDebugging)
+					this.domContainer.appendChild(this.stats.dom)
+				else
+					this.domContainer.removeChild(this.stats.dom)
+			}
+		}
+		
+		this.me = me; //Nom de l'usager local	
+		this.currentPlayer = null; //Variable qui contient le joueur actif du tour actuel
+
+		//MVC
 		this.vue = new GameView(this);
 		this.modele = new GameModel(this,gameVariant,playerList);
 		this.vue.initGameObjets();
 		this.currentTurn = 1;
 
+		//Input usager
 		this.startingX = null;
 		this.startingY= null;
 		this.distanceDown = null;
 		this.maxDistance = 200;
-		this.justLaunched = false;
-	
+		this.justLaunched = false;	
 		//Start powerBar
 		document.onmousedown = (e)=>{
 			//Si right click down
-			if(e.which == 3){
+			if(e.which == 3){				
 				this.startingX = e.screenX;
 				this.startingY = e.screenY;	
 				this.distanceDown = 0;			
 			}
 		}
-
 		//Update powerBar
 		document.onmousemove = (e)=>{
 			if(this.startingX != null){
 				this.distanceDown += e.movementY;				
 			}
 		}
-
 		//Shoot
 		document.onmouseup = (e)=>{
-			//Si right click down
-			if(e.which == 3){
-				
+			//Si right click up
+			if(e.which == 3){					
 				this.justLaunched = true;
 				setTimeout(()=>{
 					this.startingX = null;
 					this.startingY = null;	
 					this.distanceDown = null;	
-				},16);					
+				},100);					
 			}
 		}
 	}
@@ -88,7 +101,7 @@ class Controller{
 	* Initialiser le prochain tour
 	*********************************************************************/
 	startProccessingTurn(){
-		this.modele.isProcessing = true;
+		this.modele.isProcessing = true; //Sauve des calculs quand le jeu est idle
 		this.resetCameraFocus();
 	}
 
@@ -96,23 +109,26 @@ class Controller{
 	* Gestion de fin de tour
 	*********************************************************************/
 	endTurn(scored){
-		//Si reussi *******
+		//Si reussi ****************************************
 		if(scored){
 			//Incrementer score
-			this.currentPlayer.caroms+=1;
+			this.currentPlayer.caroms+=1;			
 			//Afficher animation de tour reussi
 			this.vue.hasScored();
-			//Debut du deuxième tour apres 2secs
+			this.currentPlayer.updateScoreModel();
+
+			//Debut du prochain tour apres 2secs
 			setTimeout(()=>{
 				this.changeCameraFocus(this.currentPlayer.boule);
-				this.resetPlayer();
+				this.currentPlayer.reset();
 			},2000);			
 		}
-		//Sinon ********
+		//Sinon ****************************************
 		else{
 			this.vue.hasNotScored();
 			this.nextPlayer();
-		}
+		}		
+
 		//Reset Modele
 		this.modele.isProcessing = false;
 		this.modele.turnIsValid = true;	
@@ -135,31 +151,17 @@ class Controller{
 				if(p.nom == this.me){
 					//Si on est le prochain joueur, focus la camera sur notre boule
 					setTimeout(()=>{
-						this.changeCameraFocus(this.currentPlayer.boule);						
+						this.changeCameraFocus(p.boule);						
 					},2000);
 				}			
 				break;			
 			}			
 		}
 		//Reinitialise nouveau/prochain joueur
-		this.resetPlayer()
+		this.currentPlayer.reset();
 
 		//Change spotlight, le pointe vers l'autre joueur
 		this.vue.rotateSpotLight();
-	}
-
-	/*********************************************************************
-	* Reinitialise/reset le joueur actuel
-	*********************************************************************/
-	resetPlayer(){				
-		this.currentPlayer.bandesTouchees = [];
-		this.currentPlayer.boulesTouchees = [];
-		//Aligne la queue au dessus de la boule du joueur		
-		this.currentPlayer.queue.pivot.position.x = this.currentPlayer.boule.model.position.x;
-		this.currentPlayer.queue.pivot.position.z = this.currentPlayer.boule.model.position.z;
-		
-		//Animation
-		this.currentPlayer.queue.fadeDown();
 	}
 
 	/*********************************************************************
@@ -233,7 +235,7 @@ class Controller{
 	* Recuperer l'angle de la powerBar/ Jauge de tir
 	*********************************************************************/
 	getPowerBarAngle(){
-		//L'angle est local
+		//L'angle est est fonction de la camera locale, aucune requete
 		return this.vue.cameraControls.getPolarAngle()+Math.PI;
 	}
 
@@ -241,9 +243,13 @@ class Controller{
 	* Update/Tick
 	*********************************************************************/
 	tick(){
+		if(this.isDebugging){this.stats.begin();}
+		
 		//Update game	
 		this.modele.update()
 		this.vue.renderScene()
+		
+		if(this.isDebugging){this.stats.end();}
 	}
 }
 

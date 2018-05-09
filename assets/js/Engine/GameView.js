@@ -26,13 +26,15 @@ export default class GameView{
 		// Creer une scene vide
 		this.scene = new THREE.Scene();				
 		let sceneWidth = document.getElementById("carom-container").offsetWidth;
-		let sceneHeight = document.getElementById("carom-container").offsetHeight-document.getElementById("footer").offsetHeight-2;		
+		let sceneHeight = document.getElementById("carom-container").offsetHeight-document.getElementById("footer").offsetHeight-2;				
+		document.getElementById("carom-container").style.position="relative";
 		
 		// Init le renderer 
 		this.renderer = new THREE.WebGLRenderer({ antialias: true , alpha: true	});	
 		this.renderer.setClearColor("#fff", 0);
 		this.renderer.setSize(sceneWidth, sceneHeight);	
 		this.renderer.shadowMap.enabled = true;	
+		this.renderer.domElement.className = "grabbable"
 		document.getElementById("carom-container").appendChild( this.renderer.domElement );
 
 		//Init Camera et lumieres
@@ -64,7 +66,7 @@ export default class GameView{
     *******************************************************************************/
 	initCamera(){
 		//Camera
-		this.camera = new THREE.PerspectiveCamera( 75, screen.width / screen.height  , 1, 10000 );    
+		this.camera = new THREE.PerspectiveCamera( 75, screen.width / screen.height  , 0.5, 400 );    
 		this.camera.position.x = 0;
 		this.camera.position.y = 15;
 		this.camera.position.z = 38;			

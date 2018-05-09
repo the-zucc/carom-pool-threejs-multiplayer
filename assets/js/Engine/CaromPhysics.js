@@ -10,6 +10,7 @@ export default class CaromPhysics{
         this.isStationary = new THREE.Vector3(0,0,0);
         this.lowestSpeed = 0.005;
         this.friction = 0.018;
+        this.cushionAbsorbtion = 0.05;
         this.modele = modele;       
     }
 
@@ -136,7 +137,7 @@ export default class CaromPhysics{
         let balls= this.modele.boules;
         let halfWidth  = table.width  / 2,
             halfHeight = table.depth / 2; 
-        let hit = null;       
+        let hit = null;               
         let current = this.modele.controlleur.currentPlayer.nom;
         for(let i = 0; i < balls.length; i++){
             const ball = balls[i];  
@@ -148,29 +149,59 @@ export default class CaromPhysics{
             if (m.position.x+r > halfWidth) {
                 m.position.x = halfWidth - r;
                 ball.velocity.x *= -1 //inverser le X                  
-                hit = m.name == current ? table.topEdge: null;             
+                hit = m.name == current ? table.topEdge: null;    
+                //Perte d'absorption
+                ball.velocity.sub(ball.velocity.clone().multiplyScalar(this.cushionAbsorbtion)) 
+                /*******IF DEBUGGING*******/
+                 if(this.modele.controlleur.isDebugging){this.showBounce(ball)}         
             }
             else if (m.position.x-r < -halfWidth) {
                 m.position.x = -halfWidth + r;
                 ball.velocity.x *= -1 //inverser le X               
-                hit = m.name == current ? table.bottomEdge: null;        
+                hit = m.name == current ? table.bottomEdge: null; 
+                //Perte d'absorption
+                ball.velocity.sub(ball.velocity.clone().multiplyScalar(this.cushionAbsorbtion)) 
+                /*******IF DEBUGGING*******/
+                if(this.modele.controlleur.isDebugging){this.showBounce(ball)}                
             }
 
             if (m.position.z+r > halfHeight) {
                 m.position.z = halfHeight - r;
                 ball.velocity.z *= -1 //inverser le Z
                 hit = m.name == current ? table.leftEdge: null;  
+                //Perte d'absorption
+                ball.velocity.sub(ball.velocity.clone().multiplyScalar(this.cushionAbsorbtion)) 
+                /*******IF DEBUGGING*******/
+                if(this.modele.controlleur.isDebugging){this.showBounce(ball)}         
             }
             else if (m.position.z-r < -halfHeight) {
                 m.position.z = -halfHeight + r;
                 ball.velocity.z *= -1 //inverser le Z
-                hit = m.name == current ? table.rightEdge: null;        
+                hit = m.name == current ? table.rightEdge: null;  
+                //Perte d'absorption
+                ball.velocity.sub(ball.velocity.clone().multiplyScalar(this.cushionAbsorbtion)) 
+                /*******IF DEBUGGING*******/
+                if(this.modele.controlleur.isDebugging){this.showBounce(ball)}               
             }            
-        }
-        
+        }        
+          
         return hit;
 
     }    
+    
+     /*******************************************************************************
+    * Montre rebonds et forces des impact, methode de debbugging
+    *******************************************************************************/
+    showBounce(ball){
+        let dir1 = ball.velocity.clone().normalize();   
+        let length = ball.velocity.length()*10;
+        length = length < 0.5 ? 1: length;         
+        let h1 =  new THREE.ArrowHelper( dir1, ball.model.position, ball.velocity.length()*10, ball.couleur,1,1 );           
+        this.modele.controlleur.vue.scene.add( h1 )        
+        setTimeout(()=>{                
+                this.modele.controlleur.vue.scene.remove( h1 )                
+        },5000)
+    }
 
     /*******************************************************************************
     * Applique une translation fractionnaire sur toutes les balles
@@ -183,7 +214,7 @@ export default class CaromPhysics{
             if(!ball.velocity.equals(this.isStationary)){
                 //Deplace toutes les balles d'une fraction de leur vecteur de mouvement
                 ball.model.position.add(ball.velocity.clone().multiplyScalar(fraction));  
-                //Applique une pseudo friction
+                //Applique la friction
                 ball.velocity.sub(ball.velocity.clone().multiplyScalar(this.friction*fraction)) 
                 //Si vitesse trop petite, arondir a 0
                 if(Math.abs(ball.velocity.x) < this.lowestSpeed){
@@ -257,10 +288,14 @@ export default class CaromPhysics{
         ball2.velocity.x = vel1F.x;
         ball2.velocity.z = vel1F.y;   
         
-       
+       /*******IF DEBUGGING*******/
+        if(this.modele.controlleur.isDebugging){
+            this.showBounce(ball1)
+            this.showBounce(ball2)       
+        }
+
         //Return boule touchee par la notre
-        let current = this.modele.controlleur.currentPlayer.nom
-        console.log(current,ball1.model.name,ball2.model.name)
+        let current = this.modele.controlleur.currentPlayer.nom       
         if(ball1.model.name == current){    
             return ball2;
         }

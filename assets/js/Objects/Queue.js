@@ -9,22 +9,28 @@ import * as THREE from 'three'
 export default class Queue{
 	constructor(x,y,z,prop,parent){			
 		this.proprietaire = prop;	
+		this.isActive = false;
+
 		this.pivot = new THREE.Object3D();
 		this.pivot.position.copy(this.proprietaire.boule.model.position);
 		this.pivot.position.y+=81;
+
+		this.rayCaster= new THREE.Raycaster();
+		this.rayCaster.near = this.proprietaire.boule.radius * 1.1; //Pour eviter que le rayCaster return la boule actuelle
+		this.rayCaster.far = 100;
+		this.direction = new THREE.Vector3();		
+			
+		this.baseDistance = 11+(this.proprietaire.boule.radius);	
+		this.powerBarLength = 8;		
+		this.force = 0.001; //Three JS doesn't like null lengths
+		this.maxForce = 5;	
+
+		this.createModel(prop.nom);
 		
 		//Si joueur actif, descendre;
 		if(this.proprietaire.isActive){
 			this.fadeDown();
 		}
-			
-		this.baseDistance = 11+(this.proprietaire.boule.radius);	
-		this.powerBarLength = 8;		
-		this.force = 0.01; //Three JS doesn't like null lengths
-		this.isCharging = false;		
-
-		this.createModel(prop.nom);	
-
 	}	
 
 	/*******************************************************************************
@@ -32,10 +38,11 @@ export default class Queue{
     *******************************************************************************/
 	createModel(name){
 		this.model = new THREE.Object3D();
+		
 		this.pivot.add(this.model);
 		this.model.name = name;	
 		this.model.position.set(0,this.baseDistance,0);			
-		this.pivot.rotateZ(Math.PI/2.1)
+		this.pivot.rotateZ(Math.PI/2.1)	
 
 		//Corps principal		
 		let texture = new THREE.TextureLoader().load( require('assets/images/textures/TEST2.jpg') );	
@@ -82,7 +89,7 @@ export default class Queue{
 		//Jauge de force
 		this.baseThickness = 0.2;
 		let geometry5 = new THREE.CylinderBufferGeometry(0.35,0.35,this.baseThickness, 15 , 15);	
-		let materialBase = new THREE.MeshPhongMaterial({ color: 0x000000,  transparent: true,  opacity: 0.5  });
+		let materialBase = new THREE.MeshPhongMaterial({ color: 0x000000,  transparent: true,  opacity: 0.6  });
 		let base = new THREE.Mesh( geometry5, materialBase );	
 		base.position.set(0, 2 ,1.5);		
 		base.castShadow = true;
@@ -108,34 +115,50 @@ export default class Queue{
 		//Update les angles		
 		this.pivot.rotation.y = cueAngle;
 		this.powerBar.parent.rotation.z = barAngle;
-
+		
 		//Update la powerBar
 		this.powerBar.geometry.dispose();
-		this.force = this.powerBarLength*percentage;
-		let newGeo = new THREE.CylinderBufferGeometry(0.25,0.25,this.force, 15 , 15);
+		let powerBarPercentage = this.powerBarLength*percentage;
+		this.force = this.maxForce*percentage;
+		let newGeo = new THREE.CylinderBufferGeometry(0.25,0.25,powerBarPercentage, 15 , 15);
 		this.powerBar.geometry = newGeo;
 		this.powerBar.position.set(0,(this.force/2)+this.baseThickness/2,0);		
 		
+		//Update le raycaster pour l'helper de direction
+		this.direction.set(this.force,0,0);
+		this.direction.applyAxisAngle(new THREE.Vector3(0,1,0),cueAngle);
+		this.rayCaster.set(this.pivot.position, this.direction.clone().normalize())
+		
+		//Verifie quel objet est retourné par le rayCaster
+		if(this.isActive){
+			let intersectWith = this.rayCaster.intersectObjects(this.proprietaire.controlleur.modele.meshList)[0];			
+			if(intersectWith != undefined){				
+				let distIntersection = intersectWith.distance;
+				this.helper.setLength(distIntersection)				
+			}
+		}
 		//Update la position
 		this.model.position.y = this.baseDistance+(this.force*1.2)
 
 		//Verifie si le joueur a tiré et que la force n'est pas nulle
-		if(justShot && percentage != 0.001)
-			this.hitBall(cueAngle);		
+		if(justShot && percentage != 0.001 && this.isActive)
+			this.hitBall();		
 	}
 
 	/*******************************************************************************
     * Frapper la boule
     *******************************************************************************/
-	hitBall(angle){					
+	hitBall(){			
+		console.log("HITBALL")		
 		//Commence le tour actuel
-		this.proprietaire.controlleur.startProccessingTurn();			
-		console.log(this.force)
-		//Vecteur a donner a la boule
-		let tmpVect = new THREE.Vector3(this.force,0,0);
+		this.proprietaire.controlleur.startProccessingTurn();		
 		//Appliquer la force sur l'axe
-		tmpVect.applyAxisAngle(new THREE.Vector3(0,1,0),angle);	
-		this.proprietaire.boule.velocity = tmpVect;	
+			
+		this.proprietaire.boule.velocity = this.direction.clone();	
+
+		//Reset
+		this.force = 0.001;
+		this.isActive = false;
 		
 		setTimeout(()=>{
 			this.fadeUp();
@@ -146,12 +169,13 @@ export default class Queue{
     * Cacher la queue
     *******************************************************************************/
 	fadeUp(){
-		let tick = 0;
+		let tick = 0;		
+		this.helper = new THREE.Object3D();
 		let animationUp = setInterval(()=>{			
 			tick+=1;
 			this.pivot.position.y += 0.45;			
-			if(tick == 180){
-				window.clearInterval(animationUp);
+			if(tick == 180){				
+				window.clearInterval(animationUp);				
 			}
 		},17)	
 	}
@@ -165,6 +189,11 @@ export default class Queue{
 			tick+=1;			
 			this.pivot.position.y -= 0.45;
 			if(tick == 180){
+				this.helper = new THREE.ArrowHelper(new THREE.Vector3(0,-1,0),new THREE.Vector3(0,0,0),20);				
+				this.pivot.add(this.helper)
+				this.helper.rotateZ(Math.PI/4)	
+				console.log(this.helper)
+				this.isActive = true;
 				window.clearInterval(animationDown);
 			}
 		},17)		

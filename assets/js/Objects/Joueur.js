@@ -5,8 +5,7 @@ import * as THREE from 'three'
 export default class Joueur{
 	constructor(nom,score,couleur,position,isActive,c){
 		this.controlleur = c;
-		this.nom = nom;
-		this.score = score;
+		this.nom = nom;		
 		this.caroms = 0;
 		this.isActive = isActive;
 		
@@ -20,26 +19,60 @@ export default class Joueur{
 
 	createModel(pos){				
 		let loader = new THREE.FontLoader();
-		let material = new THREE.MeshPhongMaterial({ color:this.couleur ,  transparent: false,  opacity: 1  , shininess: 100});
-		let geometry;
+		this.material = new THREE.MeshPhongMaterial({ color:this.couleur ,  transparent: false,  opacity: 1  , shininess: 100});
+		let geometry,scoreText;
 		this.model = new THREE.Object3D(0,0,0);
 		loader.load( "https://threejs.org/examples/fonts/droid/droid_serif_regular.typeface.json", ( font )=> {
-		 	geometry = new THREE.TextGeometry( this.nom, {
-				font: font,
+			this.font = font; 
+			geometry = new THREE.TextGeometry( this.nom, {
+				font: this.font,
 				size: 10,
 				height: 1,
 				curveSegments: 12				
 			} );
 
-			let name = new THREE.Mesh(geometry,material)
-			name.position.set(-40,10,-60);
-			name.castShadow = true;	
-			this.model.add(name);	
+			scoreText = new THREE.TextGeometry( "Score :", {
+				font: this.font,
+				size: 5,
+				height: 1,
+				curveSegments: 12				
+			} );
+
+			this.nameModel = new THREE.Mesh(geometry,this.material)
+			let score = new THREE.Mesh(scoreText,this.material)
+			this.nameModel.position.set(-40,20,-60);
+			score.position.set(0,15,0);
+			score.castShadow = true;
+			this.nameModel.castShadow = true;	
+			this.nameModel.add(score)
+			this.model.add(this.nameModel);	
 
 			if(pos != 0){
 				this.model.rotation.y = Math.PI;
-			}			
+			}	
+			
+			this.updateScoreModel();
 		} );
+	}
+
+	updateScoreModel(){
+		let scoreGeo = new THREE.TextGeometry( this.caroms, {
+			font: this.font,
+			size: 5,
+			height: 1,
+			curveSegments: 12				
+		} );
+		//Creer le modele la premiere fois, update les fois d'apres
+		if(this.scoreModel == undefined){
+			this.scoreModel = new THREE.Mesh(scoreGeo,this.material)
+			this.scoreModel.position.set(25,15,0);
+			this.scoreModel.castShadow = true;
+			this.nameModel.add(this.scoreModel)
+		}
+		else{
+			this.scoreModel.geometry.dispose()
+			this.scoreModel.geometry = scoreGeo;
+		}
 	}
 
 	update(){
@@ -54,10 +87,21 @@ export default class Joueur{
 		this.bandesTouchees.push(edge)		
 	}
 
+	reset(){
+		this.bandesTouchees = [];
+		this.boulesTouchees = [];
+		//Aligne la queue au dessus de la boule du joueur		
+		this.queue.pivot.position.x = this.boule.model.position.x;
+		this.queue.pivot.position.z = this.boule.model.position.z;
+		
+		//Animation
+		this.queue.fadeDown();
+	}
+
 	hasHitBall(ball){
 		let name = ball.model.name;
 		//Si balle pas encore touchee
-		if (this.boulesTouchees.filter(function(e) { return e.name === name; }).length == 0) {	
+		if (this.boulesTouchees.filter((e)=> {return e.model.name == name; }).length == 0) {			
 			this.boulesTouchees.push(ball)
 			return false;
 		}
