@@ -22,29 +22,29 @@
           </v-card-media>
           <v-card-title primary-title>
             <v-flex xs12 text-xs-center>
-              <h3 class="headline">{{item.titre}}</h3>
-               <div xs12 text-xs-center>{{item.desc}}</div>
+              <h3 class="headline">titre</h3>
+               <div xs12 text-xs-center>desc</div>
             </v-flex>
           </v-card-title>
           <v-card-actions >
              <v-flex xs12 text-xs-center>
-                <nuxt-link :to="item.link"><v-btn :color="item.color">Sélectionner</v-btn></nuxt-link>
+                <nuxt-link to="/carom?type=1"><v-btn color="orange">Sélectionner</v-btn></nuxt-link>
              </v-flex>
           </v-card-actions>
         </v-card>
     </v-flex>
-    <v-speed-dial v-if="parties.length>0" v-model="fab" bottom right :direction="direction" :transition="transition" fixed style="right:25px;bottom:50px" >
+    <v-speed-dial v-model="fab" bottom right :direction="direction" :transition="transition" fixed style="right:25px;bottom:50px" >
         <v-btn slot="activator" color="blue darken-2" dark fab hover v-model="fab" >
         <v-icon>add</v-icon>
         <v-icon>close</v-icon></v-btn>
 
-      <v-chip color="red" text-color="white" v-on:click="addPartie(2)">
+      <v-chip color="red" text-color="white" v-on:click="createPartie({type:2})">
         <v-avatar><v-icon class="red darken-4">add</v-icon></v-avatar>Carom 3 bandes
       </v-chip>
-      <v-chip color="orange" text-color="white" v-on:click="addPartie(1)">
+      <v-chip color="orange" text-color="white" v-on:click="createPartie({type:1})">
         <v-avatar><v-icon class="orange darken-4">add</v-icon></v-avatar>Carom 1 bande
       </v-chip>
-      <v-chip color="green" text-color="white" v-on:click="addPartie(0)">
+      <v-chip color="green" text-color="white" v-on:click="createPartie({type:0})">
         <v-avatar><v-icon class="green darken-4" >add</v-icon></v-avatar>Carom Libre
       </v-chip>
     </v-speed-dial>
@@ -52,6 +52,8 @@
   
 </template>
 <script>
+import { mapState, mapGetters, mapActions } from "vuex";
+
 export default {
   transition(to, from) {
     if (!from) return "slide-left";
@@ -60,7 +62,6 @@ export default {
   },
   data() {
     return {
-      parties:[],
       items: [
         {
           id: "0",
@@ -86,7 +87,7 @@ export default {
       ],
 
       direction: "left",
-      direction2:"down",
+      direction2: "down",
       fab: false,
       fling: false,
       hover: true,
@@ -94,9 +95,25 @@ export default {
       transition: "slide-y-reverse-transition"
     };
   },
-  methods:{
-    addPartie(index){
-      this.parties.push(this.items[index]); // what to push unto the rows array?
+  methods: {
+    addPartie(index) {
+      // this.parties.push(this.items[index]); // what to push unto the rows array?
+    },
+    ...mapActions("parties", {
+      findParties: "find",
+      createPartie: "create"
+    }),
+    created() {
+      this.findParties();
+    }
+  },
+
+  computed: {
+    ...mapGetters("parties", {
+      findPartiesInStore: "find"
+    }),
+    parties() {
+      return this.findPartiesInStore()
     }
   }
 };
