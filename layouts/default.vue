@@ -104,7 +104,15 @@ export default {
       games: [
         {
           action: "local_activity",
-          title: "Partie 1",
+          title: "Votre Jeu",
+          stats: [
+            { title: "Nombre de coups", number: "10", icon: "bubble_chart" },
+            { title: "Nombre de carom", number: "1", icon: "timeline" }
+          ]
+        },
+        {
+          action: "local_activity",
+          title: "Adversaire",
           stats: [
             { title: "Nombre de coups", number: "10", icon: "bubble_chart" },
             { title: "Nombre de carom", number: "1", icon: "timeline" }
