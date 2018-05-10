@@ -9,7 +9,7 @@ export default class CaromPhysics{
     constructor(modele){  
         this.isStationary = new THREE.Vector3(0,0,0);
         this.lowestSpeed = 0.005;
-        this.friction = 0.018;
+        this.friction = 0.016;
         this.cushionAbsorbtion = 0.05;
         this.modele = modele;       
     }
@@ -137,7 +137,7 @@ export default class CaromPhysics{
         let balls= this.modele.boules;
         let halfWidth  = table.width  / 2,
             halfHeight = table.depth / 2; 
-        let hit = null;               
+        let hit = null;  //Retourne la bande frappee SEULEMENT si frappee par la boule du joueur actuel             
         let current = this.modele.controlleur.currentPlayer.nom;
         for(let i = 0; i < balls.length; i++){
             const ball = balls[i];  

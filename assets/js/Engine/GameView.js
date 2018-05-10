@@ -5,7 +5,7 @@
 * Fichier: GameView.js 
 ************************************************************************************/
 import * as THREE from 'three';
-import { Object3D } from 'three';
+import { Object3D, Vector3 } from 'three';
 let OrbitControls = require('three-orbit-controls')(THREE);
 
 export default class GameView{
@@ -108,6 +108,7 @@ export default class GameView{
 				this.spotLight.shadow.camera.far = 100;			
 		this.scene.add( this.spotLight );	
 
+		//Lumiere qui pointe vers le joueur actuel
 		this.spotLight2 = new THREE.SpotLight( 0xFFFFFF, 2 );
 			this.spotLight2.position.set( 0, 70, 0);
 			this.spotLight2.angle = Math.PI/3;
@@ -133,6 +134,10 @@ export default class GameView{
 		this.cameraControls.autoRotate = false;		
 		let currentFocus = this.cameraControls.target.clone();		
 		let targetFocus = obj.model.position.clone();
+		let cameraPosition = this.camera.position;
+		let camereToFocusVector = new Vector3();
+		camereToFocusVector.subVectors(cameraPosition,targetFocus)
+		console.log("ZOMM : "+this.cameraControls.zoom0) 
 					
 		let tick = 0;
 		let animation = setInterval(()=>{		
@@ -141,6 +146,11 @@ export default class GameView{
 			//Interpoler le focus actuel en direction du focus cible
 			currentFocus.lerp(targetFocus, 0.05);			
 			this.cameraControls.target = currentFocus;			
+			
+
+			//Interpoler la position de la camera pour zoom in vers la cible
+			
+
 			if(tick ==80){
 				this.cameraControls.target = obj.model.position;
 				window.clearInterval(animation);
@@ -155,6 +165,8 @@ export default class GameView{
 		this.cameraControls.autoRotate = true;
 		let currentFocus = this.cameraControls.target.clone();		
 		let targetFocus = this.scene.position;
+		let cameraTarget = this.camera.position.clone();
+		cameraTarget.multiplyScalar(10)
 				
 		let tick = 0;
 		let animation = setInterval(()=>{		
@@ -163,6 +175,9 @@ export default class GameView{
 			// Interpolate currentFocus towards targetFocus
 			currentFocus.lerp(targetFocus, 0.05);			
 			this.cameraControls.target = currentFocus;
+
+			//Zoom out
+			this.camera.position.lerp(cameraTarget,0.005);
 					
 			if(tick ==80){
 				this.cameraControls.target = this.scene.position;

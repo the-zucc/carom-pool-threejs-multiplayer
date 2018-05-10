@@ -65,8 +65,8 @@ export default class GameModel{
 				},2500)		
 			}			
 		}		
-
-		/*for (let i = -20; i < 20; i+=4) {			
+		/*
+		for (let i = -20; i < 20; i+=4) {			
 			for (let j = -40; j < 40; j+=4) {
 				let tmp = new Boule(j,i,null,bouleNeutre);
 				//tmp.velocity.set(Math.random(),0,Math.random());
