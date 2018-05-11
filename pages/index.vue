@@ -104,7 +104,7 @@ export default {
       createPartie: "create"
     }),
     created() {
-      this.findParties();
+      this.findParties({query: {}});
     }
   },
 
@@ -113,7 +113,7 @@ export default {
       findPartiesInStore: "find"
     }),
     parties() {
-      return this.findPartiesInStore()
+      return this.findPartiesInStore({query: {}}).data
     }
   }
 };
