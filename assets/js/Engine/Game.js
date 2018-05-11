@@ -102,7 +102,8 @@ class Controller{
 	*********************************************************************/
 	startProccessingTurn(){
 		this.modele.isProcessing = true; //Sauve des calculs quand le jeu est idle
-		this.resetCameraFocus();
+		if(this.currentPlayer.nom == this.me)
+			this.resetCameraFocus();
 	}
 
 	/*********************************************************************
@@ -118,9 +119,10 @@ class Controller{
 			this.currentPlayer.updateScoreModel();
 
 			//Debut du prochain tour apres 2secs
+			this.currentPlayer.reset();
 			setTimeout(()=>{
-				this.changeCameraFocus(this.currentPlayer.boule);
-				this.currentPlayer.reset();
+				if(this.currentPlayer.nom == this.me)
+					this.changeCameraFocus(this.currentPlayer.boule);				
 			},2000);			
 		}
 		//Sinon ****************************************

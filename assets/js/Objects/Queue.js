@@ -149,8 +149,7 @@ export default class Queue{
 	/*******************************************************************************
     * Frapper la boule
     *******************************************************************************/
-	hitBall(){			
-		console.log("HITBALL")		
+	hitBall(){					
 		//Commence le tour actuel
 		this.proprietaire.controlleur.startProccessingTurn();		
 		//Appliquer la force sur l'axe

@@ -33,9 +33,11 @@ export default class CaromTable{
     * Creation du modele 3D de la surface de jeu
     *******************************************************************************/
 	initGameSurface(){
+		let image = require('assets/images/textures/Table.png');
+		let textureSurface = new THREE.TextureLoader().load( image);	
 		//Surface de jeu		
 		let surfaceGeo = new THREE.BoxGeometry( this.width-0.01, this.height, this.depth-0.01 );
-		let surfaceMaterial = new THREE.MeshPhongMaterial( {color: this.surfaceColor} );
+		let surfaceMaterial = new THREE.MeshPhongMaterial( {map:textureSurface} );
 		let edgeMaterial = new THREE.MeshPhongMaterial( {color: this.edgeColor} );
 		this.surface = new THREE.Mesh( surfaceGeo, surfaceMaterial );	
 		this.surface.position.y = -0.505;

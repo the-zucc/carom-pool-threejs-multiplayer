@@ -69,7 +69,7 @@ export default class GameView{
 		this.camera = new THREE.PerspectiveCamera( 75, screen.width / screen.height  , 0.5, 400 );    
 		this.camera.position.x = 0;
 		this.camera.position.y = 15;
-		this.camera.position.z = 38;			
+		this.camera.position.z = 55;			
 		this.camera.lookAt(this.scene.position);  		
 		
 		//Controles
@@ -134,10 +134,13 @@ export default class GameView{
 		this.cameraControls.autoRotate = false;		
 		let currentFocus = this.cameraControls.target.clone();		
 		let targetFocus = obj.model.position.clone();
-		let cameraPosition = this.camera.position;
-		let camereToFocusVector = new Vector3();
-		camereToFocusVector.subVectors(cameraPosition,targetFocus)
-		console.log("ZOMM : "+this.cameraControls.zoom0) 
+		let cameraPos = this.camera.position.clone();
+		let cameraTarget = cameraPos.sub(targetFocus);		
+		cameraTarget.x *= 0.65;
+		cameraTarget.y = 0; //Orbit control va limiter le zoom
+		cameraTarget.z *= 0.65;
+		
+		
 					
 		let tick = 0;
 		let animation = setInterval(()=>{		
@@ -147,9 +150,8 @@ export default class GameView{
 			currentFocus.lerp(targetFocus, 0.05);			
 			this.cameraControls.target = currentFocus;			
 			
-
-			//Interpoler la position de la camera pour zoom in vers la cible
-			
+			//Zoom in
+			this.camera.position.lerp(cameraTarget,0.05);
 
 			if(tick ==80){
 				this.cameraControls.target = obj.model.position;
@@ -166,7 +168,9 @@ export default class GameView{
 		let currentFocus = this.cameraControls.target.clone();		
 		let targetFocus = this.scene.position;
 		let cameraTarget = this.camera.position.clone();
-		cameraTarget.multiplyScalar(10)
+		cameraTarget.x *= 2;
+		cameraTarget.y *= 8;
+		cameraTarget.z *= 2;
 				
 		let tick = 0;
 		let animation = setInterval(()=>{		
