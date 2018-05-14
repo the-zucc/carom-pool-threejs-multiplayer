@@ -19,7 +19,7 @@ export default class CaromController{
 		this.stats = new Stats();
 		this.stats.showPanel( 1 );
 		document.onkeypress = (e)=>{
-			//D : Toggle le debugging
+			//D : Toggle le debugging			
 			if(e.which == 100){
 				this.isDebugging = !this.isDebugging;
 				if(this.isDebugging)
@@ -27,6 +27,13 @@ export default class CaromController{
 				else
 					this.domContainer.removeChild(this.stats.dom)
 			}
+			
+				this.remotePlayer.shot = true;
+				setTimeout(()=>{
+					this.remotePlayer.shot = false;
+				},1000);	
+			
+			
 		}
 		
 		this.me = me; //Nom de l'usager local	
@@ -45,13 +52,7 @@ export default class CaromController{
 		this.maxDistance = 200;
 		this.justLaunched = false;	
 
-		document.onkeypress = (e)=>{
-			console.log("PRESS")
-			this.remotePlayer.shot = true;
-			setTimeout(()=>{
-				this.remotePlayer.shot = false;
-			},1000);	
-		}
+		
 		//Start powerBar
 		document.onmousedown = (e)=>{
 			//Si right click down
