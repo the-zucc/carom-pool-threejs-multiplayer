@@ -5,7 +5,6 @@
 * Fichier: GameView.js 
 ************************************************************************************/
 import * as THREE from 'three';
-import { Object3D, Vector3 } from 'three';
 let OrbitControls = require('three-orbit-controls')(THREE);
 
 export default class GameView{
@@ -50,6 +49,7 @@ export default class GameView{
 		//Init les objets
 		this.scene.add(modele.table.model);
 		this.scene.add(modele.environment.model)
+		this.scene.add(modele.board.model)
 		for (let i = 0; i < modele.boules.length; i++) {
 			const element = modele.boules[i].model;
 			this.scene.add(element);			
