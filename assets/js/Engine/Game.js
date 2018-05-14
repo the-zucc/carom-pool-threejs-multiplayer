@@ -250,6 +250,6 @@ export default class CaromController{
 	gameLoop(){
 		this.tick();
 		//Callback function
-		requestAnimationFrame(this.gameLoop);	
+		requestAnimationFrame(()=>this.gameLoop());
 	}
 }

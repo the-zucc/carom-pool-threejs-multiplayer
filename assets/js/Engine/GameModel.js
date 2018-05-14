@@ -22,7 +22,7 @@ export default class GameModel{
 		this.boules = []
 		this.initGame(playerList)	
 		this.initMeshList();		
-	}
+	}	
 
 	/*******************************************************************************
     * Initialisation de la partie
@@ -177,6 +177,7 @@ export default class GameModel{
 						}
 						edge.hasBeenTouched();
 					}
+
 					
 					//Quitter la boucle
 					break;
@@ -207,6 +208,6 @@ export default class GameModel{
 				}
 				this.controlleur.endTurn(this.turnIsValid)				
 			}
-		}
+		}		
 	}
 }

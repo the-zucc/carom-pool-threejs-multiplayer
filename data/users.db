@@ -5,6 +5,6 @@
 {"email":"loicbachellerie@gmail.com","password":"$2a$12$IohCaWmoCWG34iy5T./Bpee01GGaQheenZ0pC5rnopwFDzAjo378i","name":"Loic","_id":"R41GTK9OR2OTYv9b"}
 {"email":"allo@poulet.com","password":"$2a$12$5P3QrvvqwQqd8KMvy3hdzOggzDfX/J05AAignSrxiwNsGX85gsvrK","_id":"UhRXgu7SAEx5uE6X"}
 {"email":"feathers@example.com","password":"$2a$12$tuROSA5XnDtog8y18N3rbuf8rQZhzMqN54kkAnC7U4mj1R8TTjcmi","_id":"homxZM8pRjILbtQB"}
+{"email":"laurier.lg@gmail.com","password":"$2a$12$tK0TqJUQLl6v97GlTUnBXe0PCrX2woNdrFvEMUyxERbR8rPYxLRca","name":"laurier","_id":"jU739126BZktjRUy"}
 {"_id":"vrsbQdCooDkLg2bX"}
 {"$$indexCreated":{"fieldName":"email","unique":true,"sparse":false}}
-{"email":"laurier.lg@gmail.com","password":"$2a$12$tK0TqJUQLl6v97GlTUnBXe0PCrX2woNdrFvEMUyxERbR8rPYxLRca","name":"laurier","_id":"jU739126BZktjRUy"}
