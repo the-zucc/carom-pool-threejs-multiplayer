@@ -54,7 +54,7 @@ export default class GameModel{
 				position = [-20,5];
 				isActive = false;
 			}
-			this.joueurs.push(new Joueur(actuel.nom,actuel.score,couleur,position,isActive,this.controlleur));
+			this.joueurs.push(new Joueur(actuel.nom,0,couleur,position,isActive,this.controlleur,"Score : "));
 			this.boules.push(this.joueurs[i].boule)
 
 			//Setup la camera pour joueur actif
@@ -64,15 +64,21 @@ export default class GameModel{
 					this.controlleur.changeCameraFocus(this.joueurs[i].boule);
 				},2500)		
 			}			
-		}		
+		}	
 		
+		let mode = null;
+		if (this.nbBandesMin == 0) {mode = "Libre"}
+		if (this.nbBandesMin == 1) {mode = "1 Bande"}
+		if (this.nbBandesMin == 3) {mode = "3 Bandes"}
+		this.board = new Joueur(mode,this.controlleur.currentTurn,0x42e5f4,[-20,-4000],false,this.controlleur,"Tour : ")
+		/*
 		for (let i = -20; i < 20; i+=8) {			
 			for (let j = -40; j < 40; j+=8) {
 				let tmp = new Boule(j,i,null,bouleNeutre);
 				//tmp.velocity.set(Math.random(),0,Math.random());
 				this.boules.push(tmp)				
 			}			
-		}
+		}*/
 		//Le engine physique
 		this.physics = new CaromPhysics(this);				
 	}	
@@ -80,7 +86,7 @@ export default class GameModel{
 	initMeshList(){
 		this.meshList = [];
 		this.meshList.push(this.table.topEdge.model)
-		console.log(this.table.topEdge.model)
+		
 		this.meshList.push(this.table.bottomEdge.model)
 		this.meshList.push(this.table.leftEdge.model)
 		this.meshList.push(this.table.rightEdge.model)
@@ -185,9 +191,10 @@ export default class GameModel{
 			}
 			//Compter le nombre de boules stationnaires pour arreter le tour
 			for (let i = 0; i < this.boules.length; i++) {
-				const v = this.boules[i].velocity;
-				if(v.equals(this.physics.isStationary))
-					nbStationary += 1;				
+				const ball = this.boules[i];
+				if(ball.velocity.equals(this.physics.isStationary)){
+					nbStationary += 1;	
+				}
 			}
 
 			//FIN DU TOUR ******************************************************************************
@@ -197,15 +204,16 @@ export default class GameModel{
 					this.turnIsValid = false;
 
 				/*******IF DEBUGGING*******/
-				if(this.controlleur.isDebugging){
+				if(this.controlleur.isDebugging){					
 					let endLog = "[ DEBUG ]";
 					endLog+="  TOUR : "+this.controlleur.currentTurn;
 					endLog+="  ||  JOUEUR : "+this.controlleur.currentPlayer.nom;					
 					endLog+="  ||  BANDES : "+nbBandes+"/"+this.nbBandesMin;
 					endLog+="  ||  BALLES : "+currentBalls.length+"/2";
-					endLog+= "  ||  CAROM ?: "+(this.turnIsValid? "Oui" : "Non");
-					console.log(endLog);
+					endLog+= "  ||  CAROM ?: "+(this.turnIsValid? "Oui" : "Non");	
+					console.log(endLog)			
 				}
+				this.physics.clearTrails();
 				this.controlleur.endTurn(this.turnIsValid)				
 			}
 		}		

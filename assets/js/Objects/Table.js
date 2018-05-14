@@ -33,7 +33,7 @@ export default class CaromTable{
     * Creation du modele 3D de la surface de jeu
     *******************************************************************************/
 	initGameSurface(){
-		let image = require('assets/images/textures/Table.png');
+		let image = require('assets/images/textures/TableSurface.png');
 		let textureSurface = new THREE.TextureLoader().load( image);	
 		//Surface de jeu		
 		let surfaceGeo = new THREE.BoxGeometry( this.width-0.01, this.height, this.depth-0.01 );
@@ -105,7 +105,7 @@ export default class CaromTable{
     * Creation du modele 3D de la table
     *******************************************************************************/
 	initTableFrame(){
-		let image = require('assets/images/textures/TEST.jpg');	
+		let image = require('assets/images/textures/TableFrame.jpg');	
 		let textureFrame = new THREE.TextureLoader().load( image);
 		textureFrame.repeat.set(2,4);
 		textureFrame.wrapS = THREE.RepeatWrapping;

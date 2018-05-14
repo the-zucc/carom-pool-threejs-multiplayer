@@ -9,9 +9,10 @@ export default class CaromPhysics{
     constructor(modele){  
         this.isStationary = new THREE.Vector3(0,0,0);
         this.lowestSpeed = 0.005;
-        this.friction = 0.016;
+        this.friction = 0.012; 
         this.cushionAbsorbtion = 0.05;
-        this.modele = modele;       
+        this.modele = modele;      
+        this.trails = []; 
     }
 
     /*******************************************************************************
@@ -46,7 +47,7 @@ export default class CaromPhysics{
         return currentFrameCollisions;
     }
 
-    /*******************************************************************************
+    /******************************************************************************* 
     * Calcul le plus petit temps d'impact entre deux balles
     *******************************************************************************/
     getCollisionTime(ball1,ball2) {
@@ -148,59 +149,86 @@ export default class CaromPhysics{
             //Verifier si la balle est hors des limites de la tables
             if (m.position.x+r > halfWidth) {
                 m.position.x = halfWidth - r;
+                /*******IF DEBUGGING*******/
+                if(this.modele.controlleur.isDebugging){this.showBounce(ball)}    
+                
                 ball.velocity.x *= -1 //inverser le X                  
                 hit = m.name == current ? table.topEdge: null;    
                 //Perte d'absorption
                 ball.velocity.sub(ball.velocity.clone().multiplyScalar(this.cushionAbsorbtion)) 
-                /*******IF DEBUGGING*******/
-                 if(this.modele.controlleur.isDebugging){this.showBounce(ball)}         
+                    
             }
             else if (m.position.x-r < -halfWidth) {
                 m.position.x = -halfWidth + r;
+                /*******IF DEBUGGING*******/
+                if(this.modele.controlleur.isDebugging){this.showBounce(ball)}    
+
                 ball.velocity.x *= -1 //inverser le X               
                 hit = m.name == current ? table.bottomEdge: null; 
                 //Perte d'absorption
                 ball.velocity.sub(ball.velocity.clone().multiplyScalar(this.cushionAbsorbtion)) 
-                /*******IF DEBUGGING*******/
-                if(this.modele.controlleur.isDebugging){this.showBounce(ball)}                
+                            
             }
 
             if (m.position.z+r > halfHeight) {
                 m.position.z = halfHeight - r;
+                /*******IF DEBUGGING*******/
+                if(this.modele.controlleur.isDebugging){this.showBounce(ball)}  
+
                 ball.velocity.z *= -1 //inverser le Z
                 hit = m.name == current ? table.leftEdge: null;  
                 //Perte d'absorption
                 ball.velocity.sub(ball.velocity.clone().multiplyScalar(this.cushionAbsorbtion)) 
-                /*******IF DEBUGGING*******/
-                if(this.modele.controlleur.isDebugging){this.showBounce(ball)}         
+                     
             }
-            else if (m.position.z-r < -halfHeight) {
+            else if (m.position.z-r < -halfHeight) {                
                 m.position.z = -halfHeight + r;
+                /*******IF DEBUGGING*******/
+                if(this.modele.controlleur.isDebugging){this.showBounce(ball)}    
+
                 ball.velocity.z *= -1 //inverser le Z
                 hit = m.name == current ? table.rightEdge: null;  
                 //Perte d'absorption
                 ball.velocity.sub(ball.velocity.clone().multiplyScalar(this.cushionAbsorbtion)) 
-                /*******IF DEBUGGING*******/
-                if(this.modele.controlleur.isDebugging){this.showBounce(ball)}               
+                           
             }            
         }        
           
         return hit;
-
     }    
     
-     /*******************************************************************************
+    /*******************************************************************************
     * Montre rebonds et forces des impact, methode de debbugging
     *******************************************************************************/
-    showBounce(ball){
-        let dir1 = ball.velocity.clone().normalize();   
-        let length = ball.velocity.length()*10;
-        length = length < 0.5 ? 1: length;         
-        let h1 =  new THREE.ArrowHelper( dir1, ball.model.position, ball.velocity.length()*10, ball.couleur,1,1 );           
-        this.modele.controlleur.vue.scene.add( h1 )        
-        setTimeout(()=>{                
-                this.modele.controlleur.vue.scene.remove( h1 )                
-        },5000)
+    showBounce(ball){   
+        this.showTrail(ball);       
+        ball.lastCollision = ball.model.position.clone();
+        ball.trail = null;
+    }
+
+    showTrail(ball){
+        //Update le trail
+        if(ball.trail == undefined || ball.trail == null){
+            ball.trail = new THREE.ArrowHelper(ball.velocity.clone(),ball.model.position.clone(),0.1,ball.couleur,1,1);    
+            this.trails.push(ball.trail)   
+            this.modele.controlleur.vue.scene.add(ball.trail)
+        }
+        let distance = ball.lastCollision.clone().distanceTo(ball.model.position)
+        ball.trail.setLength(distance,1,1);        
+    }
+
+    clearTrails(){
+        let baseTime = 100;
+        let delta = 100;
+        for (let i = 0; i < this.trails.length; i++) {
+            const trail = this.trails[i];
+            setTimeout( ()=>{
+                this.modele.controlleur.vue.scene.remove(trail);                
+            }, baseTime)
+            baseTime += delta;
+        }
+
+        this.trails = []
     }
 
     /*******************************************************************************
@@ -212,6 +240,9 @@ export default class CaromPhysics{
         for (i = 0, n = ba.length; i < n; i++) {
             ball = ba[i];
             if(!ball.velocity.equals(this.isStationary)){
+                /*******IF DEBUGGING*******/
+                if(this.modele.controlleur.isDebugging){this.showTrail(ball); }      
+
                 //Deplace toutes les balles d'une fraction de leur vecteur de mouvement
                 ball.model.position.add(ball.velocity.clone().multiplyScalar(fraction));  
                 //Applique la friction
@@ -222,7 +253,7 @@ export default class CaromPhysics{
                 }
                 if(Math.abs(ball.velocity.z) < this.lowestSpeed){
                     ball.velocity.z = 0;                    
-                }
+                }          
             }                    
         }  
     }
