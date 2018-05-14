@@ -91,8 +91,6 @@ export default {
         })
         .catch(error => {
           let type = error.errorType;
-          console.log("erreur ! = ");
-          console.log(error);
           error = Object.assign({}, error);
           this.errormsg = error.message == "Invalid login" ? "Login non valide":"Problème de connexion";
           this.error = true;
