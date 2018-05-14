@@ -10,24 +10,28 @@ export default {
 	mounted () {
 		const playerListTMP = '{"joueurs":[{"nom":"Kevin Mw","score":"420" },{"nom":"JM Deschamps","score":"1337"}]}';
 		const Json = JSON.parse(playerListTMP);
-		let controller = new CaromController("Kevin Mw",this.$route.query.type,Json);
-		controller.sendCoupToServeur = this.sendCoup;
-		//requestAnimationFrame(controller.gameLoop);
+		let partieId = this.$route.query.partie;
+		let partie = this.parties({query:{_id:partieId}});
+		let controller = new CaromController("Kevin Mw",partie,Json);
+		controller.sendCoupToServeur = this.sendCoup.bind(this);
+		controller.getCoups = ()=>{return this.getCoups().data;}
 		controller.startGame();
 		//carom.demarrerPartie(this.$route.query.type);
-		//carom.controller.getCoups = this.getCoups;
+		
 		//carom.controller.getCueAngleFromRemote = null/*this.getCueAngeFromRemote*/;
 	},
 	methods:{
-		...mapActions("coups", {sendCoup:"create"})
+		...mapActions("coups", {sendCoup:"create"}),
+		...mapActions("parties", {getPartie:"find"})
 	},
 	watch:{
-		/*'getCoups':function(){
-			carom.controller.
-		}*/
+		getCoups () {
+			console.log(this.getCoups());
+		}
 	},
 	computed:{
-		...mapGetters("coups",{getCoups:"find"})
+		...mapGetters("coups",{getCoups:"find"}),
+		...mapGetters("parties",{parties:"find"})
 		/* ...mapGetters("partie",{getCueAngleFromRemote:""}) */
 	}
 }

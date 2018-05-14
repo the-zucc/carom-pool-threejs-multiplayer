@@ -231,8 +231,7 @@ export default class CaromController{
 	tick(){
 		if(this.isDebugging){this.stats.begin();}
 		
-		//Update game	
-		console.log(this.getCoups);
+		//Update game
 		this.modele.update()
 		this.vue.renderScene()
 		
