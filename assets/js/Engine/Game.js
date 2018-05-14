@@ -11,7 +11,10 @@ import Stats from '../Libs/Stats';
 * Class : CaromController
 *********************************************************************/
 export default class CaromController{
-	constructor(me,gameVariant,playerList){	
+	constructor(me,partieCourante){	
+		let playerList = partieCourante.joueurs;
+		let gameVariant = partieCourante.type;
+		this.partieCourante = partieCourante;
 		this.currentTurn = 1;
 		// Debug
 		this.isDebugging = false;
@@ -194,8 +197,8 @@ export default class CaromController{
 				//Envoyer params locaux au serveur
 				let force = this.getForceInput();
 				let direction = this.getCueAngle();				
-				let idPartie = null;
-				this.sendCoupToServeur({force:force, direction:direction});
+				let idPartie = this.partieCourante._id;
+				this.sendCoupToServeur({partieId:idPartie,force:force, direction:direction});
 				return true;
 			}
 			else
@@ -226,8 +229,10 @@ export default class CaromController{
 	*********************************************************************/
 	getCueAngle(){
 		//Si c'est notre tour
-		if(this.currentPlayer.nom == this.me){	
-			return this.vue.cameraControls.getAzimuthalAngle() + Math.PI/2;
+		if(this.currentPlayer.nom == this.me){
+			let currAngle = this.vue.cameraControls.getAzimuthalAngle() + Math.PI/2
+			this.partieCourante.angleCourant = currAngle;
+			return currAngle;
 		}
 		//Sinon, recuperer infos du serveur pour le deuxieme joueur
 		else{
@@ -267,6 +272,10 @@ export default class CaromController{
 	* GameLoop
 	*********************************************************************/
 	gameLoop(){
+		if(this.modele.joueurs.length == 0 && (this.partieCourante.joueurs[0] != undefined && this.partieCourante.joueurs[1] != undefined)){
+			this.modele.initPlayers(this.partieCourante.joueurs);
+			this.vue.initPlayers(this.modele);
+		}
 		this.remotePlayer.angle += 0.01;
 		this.remotePlayer.force = Math.random()*0.9;
 		this.tick();
