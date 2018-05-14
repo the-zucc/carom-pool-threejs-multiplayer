@@ -48,7 +48,6 @@ export default {
   },
   methods: { 
     toggleRegister() {
-  
       (this.register)? this.register = false :  this.register = true;
     },
     submit(email, password, name) {
@@ -71,22 +70,18 @@ export default {
             }.bind(this),
             3000
           );
-        } else {this.error = false;}
-
-         this.createUser({ email, password, name })
+        } else {this.error = false;
+          this.createUser({ email, password, name })
           .then(response => {
             this.login(email, password);
           })
           .catch(error => {
             let type = error.errorType;
-            error = Object.assign({}, error);
-            error.message =
-              type === "uniqueViolated"
-                ? "That email address is unavailable."
-                : "An error prevented signup.";
-            this.errormsg = error.message;
+            this.errormsg = (error.message.search("unique")!= -1)?
+            "Ce compte existe déjà" : "Problème pour s'enregistrer";
             this.error = true;
           });
+        }
       }
     },
     login(email, password) {
@@ -96,12 +91,10 @@ export default {
         })
         .catch(error => {
           let type = error.errorType;
+          console.log("erreur ! = ");
+          console.log(error);
           error = Object.assign({}, error);
-          error.message =
-            type === "uniqueViolated"
-              ? "That email address is unavailable."
-              : "An error prevented signup.";
-          this.errormsg = error.message;
+          this.errormsg = error.message == "Invalid login" ? "Login non valide":"Problème de connexion";
           this.error = true;
           setTimeout(
             function() {
