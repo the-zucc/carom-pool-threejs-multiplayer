@@ -103,11 +103,11 @@ export default {
       findParties: "find",
       createPartie: "create"
     }),
-    created() {
-      this.findParties({query: {}});
-    }
+    
   },
-
+  created() {
+    this.findParties({query: {}});
+  },
   computed: {
     ...mapGetters("parties", {
       findPartiesInStore: "find"

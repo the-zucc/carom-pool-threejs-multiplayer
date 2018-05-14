@@ -8,34 +8,9 @@ import GameModel from './GameModel';
 import GameView from './GameView';
 import Stats from '../Libs/Stats';
 /*********************************************************************
-* Variables
+* Class : CaromController
 *********************************************************************/
-let controller = null;
-/*********************************************************************
-* Initialisation du jeu
-*********************************************************************/
-function startGame(gameVariant,me,playerList){	
-	let playerListTMP = '{"joueurs":[{"nom":"Kevin Mw","score":"420" },{"nom":"JM Deschamps","score":"1337"}]}';
-	let Json = JSON.parse(playerListTMP);	
-	controller = new Controller("Kevin Mw",gameVariant,Json);	
-
-	startGameLoop();	
-}
-
-/*********************************************************************
-* GameLoop
-*********************************************************************/
-function startGameLoop(){	
-	controller.tick();
-	
-	//Callback function
-	requestAnimationFrame(startGameLoop);	
-}
-
-/*********************************************************************
-* Class : Controller
-*********************************************************************/
-class Controller{
+export default class CaromController{
 	constructor(me,gameVariant,playerList){	
 		// Debug
 		this.isDebugging = false;
@@ -95,6 +70,9 @@ class Controller{
 				},100);					
 			}
 		}
+		this.getCoups = null;
+		this.getCueAngleFromRemote = null;
+		this.sendCoupToServeur = null;
 	}
 
 	/*********************************************************************
@@ -165,7 +143,6 @@ class Controller{
 		//Change spotlight, le pointe vers l'autre joueur
 		this.vue.rotateSpotLight();
 	}
-
 	/*********************************************************************
 	* Recuperer l'input de force du joueur actuel
 	*********************************************************************/
@@ -195,6 +172,13 @@ class Controller{
 		if(true){//this.currentPlayer.nom == this.me){
 			if(this.justLaunched){
 				this.justLaunched = false;
+				let force = this.currentPlayer.queue.force;
+				let direction = {x:this.currentPlayer.queue.direction.x,
+							y:this.currentPlayer.queue.direction.y,
+							z:this.currentPlayer.queue.direction.z};
+				let posBoules = [{},{},{}];
+				let idPartie = null;
+				this.sendCoupToServeur({force:force, direction:direction, posBoules:posBoules});
 				return true;
 			}
 			else
@@ -248,14 +232,24 @@ class Controller{
 		if(this.isDebugging){this.stats.begin();}
 		
 		//Update game	
+		console.log(this.getCoups);
 		this.modele.update()
 		this.vue.renderScene()
 		
 		if(this.isDebugging){this.stats.end();}
 	}
-}
-
-export default {
-	startGame,
-	startGameLoop
+	/*********************************************************************
+	* Initialisation du jeu
+	*********************************************************************/
+	startGame(gameVariant,me,playerList){	
+		this.gameLoop();
+	}
+	/*********************************************************************
+	* GameLoop
+	*********************************************************************/
+	gameLoop(){
+		this.tick();
+		//Callback function
+		requestAnimationFrame(this.gameLoop);	
+	}
 }

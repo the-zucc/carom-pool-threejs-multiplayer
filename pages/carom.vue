@@ -4,10 +4,26 @@
 	</v-layout>
 </template>
 <script>
-import carom from 'assets/js/Carom.js';
+import CaromController from 'assets/js/Carom.js';
+import { mapGetters } from 'vuex';
 export default {
 	mounted () {
-		carom.demarrerPartie(this.$route.query.type);
+		const playerListTMP = '{"joueurs":[{"nom":"Kevin Mw","score":"420" },{"nom":"JM Deschamps","score":"1337"}]}';
+		const Json = JSON.parse(playerListTMP);
+		let controller = new CaromController("Kevin Mw",this.$route.query.type,Json);
+		controller.startGame();
+		//carom.demarrerPartie(this.$route.query.type);
+		//carom.controller.getCoups = this.getCoups;
+		//carom.controller.getCueAngleFromRemote = null/*this.getCueAngeFromRemote*/;
+	},
+	watch:{
+		/*'getCoups':function(){
+			carom.controller.
+		}*/
+	},
+	computed:{
+		...mapGetters("coups",{getCoups:"find"})
+		/* ...mapGetters("partie",{getCueAngleFromRemote:""}) */
 	}
 }
 </script>

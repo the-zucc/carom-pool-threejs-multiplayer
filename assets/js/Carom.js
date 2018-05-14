@@ -1,7 +1,3 @@
-import jeu from'./Engine/Game';
+import CaromController from'./Engine/Game';
 
-function demarrerPartie(variation){
-	jeu.startGame(variation);
-}
-
-export default {demarrerPartie};
+export default CaromController;
