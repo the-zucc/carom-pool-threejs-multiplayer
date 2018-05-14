@@ -12,35 +12,54 @@ import * as THREE from 'three';
 import GameEnvironment from '../Objects/GameEnvironment';
 
 export default class GameModel{
-	constructor(controlleur,gamevariant,playerList){			
+	constructor(controlleur,gv,pl){			
 		this.controlleur = controlleur;		
-		this.nbBandesMin = gamevariant;
+		this.nbBandesMin = gv;
 		this.isProcessing = false;	
 		this.turnIsValid = true;	
 		
 		this.joueurs = []
 		this.boules = []
-		this.initGame(playerList)	
+		this.initGame(pl)	
 		this.initMeshList();		
 	}	
 
 	/*******************************************************************************
     * Initialisation de la partie
     *******************************************************************************/
-	initGame(playerList){		
+	initGame(){		
 		//Couleur
-		let bouleNeutre = 0x730d0d,
-			bouleJoueur1 = 0xcc9900,
-			bouleJoueur2 = 0xbfbfbf;
+		let bouleNeutre = 0x730d0d;
+		
 
 		//Init table et boule neutre
 		this.table = new CaromTable(0,0,0);	
 		this.environment = new GameEnvironment();		
-		this.boules.push(new Boule(25,0,null,bouleNeutre));	
+		this.boules.push(new Boule(25,0,null,bouleNeutre));		
+		
+		let mode = null;
+		if (this.nbBandesMin == 0) {mode = "Libre"}
+		if (this.nbBandesMin == 1) {mode = "1 Bande"}
+		if (this.nbBandesMin == 3) {mode = "3 Bandes"}
+		this.board = new Joueur(mode,this.controlleur.currentTurn,0x42e5f4,[-20,-4000],false,this.controlleur,"Tour : ")
+		/*
+		for (let i = -20; i < 20; i+=8) {			
+			for (let j = -40; j < 40; j+=8) {
+				let tmp = new Boule(j,i,null,bouleNeutre);
+				//tmp.velocity.set(Math.random(),0,Math.random());
+				this.boules.push(tmp)				
+			}			
+		}*/
+		//Le engine physique
+		this.physics = new CaromPhysics(this);				
+	}	
 
+	initPlayers(playerList){
+		let bouleJoueur1 = 0xcc9900,
+			bouleJoueur2 = 0xbfbfbf;
 		//Init players
-		for(let i = 0; i<2; i++) {
-			const actuel = playerList.joueurs[i];			
+		for(let i = 0; i<playerList.length; i++) {
+			const actuel = playerList[i];			
 			let couleur = null; 
 			let position = null;
 			let isActive = null;
@@ -65,23 +84,7 @@ export default class GameModel{
 				},2500)		
 			}			
 		}	
-		
-		let mode = null;
-		if (this.nbBandesMin == 0) {mode = "Libre"}
-		if (this.nbBandesMin == 1) {mode = "1 Bande"}
-		if (this.nbBandesMin == 3) {mode = "3 Bandes"}
-		this.board = new Joueur(mode,this.controlleur.currentTurn,0x42e5f4,[-20,-4000],false,this.controlleur,"Tour : ")
-		/*
-		for (let i = -20; i < 20; i+=8) {			
-			for (let j = -40; j < 40; j+=8) {
-				let tmp = new Boule(j,i,null,bouleNeutre);
-				//tmp.velocity.set(Math.random(),0,Math.random());
-				this.boules.push(tmp)				
-			}			
-		}*/
-		//Le engine physique
-		this.physics = new CaromPhysics(this);				
-	}	
+	}
 
 	initMeshList(){
 		this.meshList = [];

@@ -49,7 +49,10 @@ export default class GameView{
 		//Init les objets
 		this.scene.add(modele.table.model);
 		this.scene.add(modele.environment.model)
-		this.scene.add(modele.board.model)
+		this.scene.add(modele.board.model)		
+	}
+
+	initPlayers(modele){
 		for (let i = 0; i < modele.boules.length; i++) {
 			const element = modele.boules[i].model;
 			this.scene.add(element);			

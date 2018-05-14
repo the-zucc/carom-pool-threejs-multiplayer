@@ -4,13 +4,14 @@
         <h2 text-xs-center class="mb-1">AJOUTER DES PARTIES</h2>
         <hr class="mb-2">
         <v-spacer></v-spacer>
-          <v-chip color="red" text-color="white" v-on:click="addPartie(2)">
+          <v-chip color="red" text-color="white" v-on:click="createPartie({type:3})">
             <v-avatar><v-icon class="red darken-4">add</v-icon></v-avatar>Carom 3 bandes
           </v-chip>
-          <v-chip color="orange" text-color="white" v-on:click="addPartie(1)">
+          <v-chip color="orange" text-color="white" v-on:click="createPartie({type:1})">
             <v-avatar><v-icon class="orange darken-4">add</v-icon></v-avatar>Carom 1 bande
           </v-chip>
-          <v-chip color="green" text-color="white" v-on:click="addPartie(0)">
+
+          <v-chip color="green" text-color="white" v-on:click="createPartie({type:0})">
             <v-avatar><v-icon class="green darken-4" >add</v-icon></v-avatar>Carom Libre
           </v-chip>
         <v-spacer></v-spacer>  
@@ -28,7 +29,7 @@
           </v-card-title>
           <v-card-actions >
              <v-flex xs12 text-xs-center>
-                <nuxt-link to="/carom?type=1"><v-btn color="orange">Sélectionner</v-btn></nuxt-link>
+               <v-btn color="orange" v-on:click="joinPartie(item)">Sélectionner</v-btn>
              </v-flex>
           </v-card-actions>
         </v-card>
@@ -38,13 +39,13 @@
         <v-icon>add</v-icon>
         <v-icon>close</v-icon></v-btn>
 
-      <v-chip color="red" text-color="white" v-on:click="createPartie({type:2})">
+      <v-chip color="red" text-color="white" v-on:click="createPartie({type:2, joueurs:[undefined, undefined]})">
         <v-avatar><v-icon class="red darken-4">add</v-icon></v-avatar>Carom 3 bandes
       </v-chip>
-      <v-chip color="orange" text-color="white" v-on:click="createPartie({type:1})">
+      <v-chip color="orange" text-color="white" v-on:click="createPartie({type:1, joueurs:[undefined, undefined]})">
         <v-avatar><v-icon class="orange darken-4">add</v-icon></v-avatar>Carom 1 bande
       </v-chip>
-      <v-chip color="green" text-color="white" v-on:click="createPartie({type:0})">
+      <v-chip color="green" text-color="white" v-on:click="createPartie({type:0, joueurs:[undefined, undefined]})">
         <v-avatar><v-icon class="green darken-4" >add</v-icon></v-avatar>Carom Libre
       </v-chip>
     </v-speed-dial>
@@ -96,6 +97,10 @@ export default {
     };
   },
   methods: {
+    joinPartie(partie) {
+      console.log(partie);
+      this.$router.push("/carom?partie="+partie._id);
+    },
     addPartie(index) {
       // this.parties.push(this.items[index]); // what to push unto the rows array?
     },
