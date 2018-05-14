@@ -4,7 +4,7 @@
 * Auteur : Kevin Mwanangwa
 * Fichier: GameEnvironment.js 
 ************************************************************************************/
-import * as THREE from 'three'
+import * as THREE from 'three';
 import CaromTable from '../Objects/Table';
 
 export default class GameEnvironment{

@@ -4,7 +4,7 @@
 * Auteur : Kevin Mwanangwa
 * Fichier: Queue.js 
 ************************************************************************************/
-import * as THREE from 'three'
+import * as THREE from 'three';
 
 export default class Queue{
 	constructor(x,y,z,prop,parent){			
@@ -15,9 +15,18 @@ export default class Queue{
 		this.pivot.position.copy(this.proprietaire.boule.model.position);
 		this.pivot.position.y+=81;
 
-		this.rayCaster= new THREE.Raycaster();
-		this.rayCaster.near = this.proprietaire.boule.radius * 1.1; //Pour eviter que le rayCaster return la boule actuelle
-		this.rayCaster.far = 100;
+		this.centerCaster= new THREE.Raycaster();
+		this.centerCaster.near = this.proprietaire.boule.radius * 1.1; //Pour eviter que le rayCaster return la boule actuelle
+		this.centerCaster.far = 100;
+
+		this.leftCaster= new THREE.Raycaster();
+		this.leftCaster.near = 0.1; //Pour eviter que le rayCaster return la boule actuelle
+		this.leftCaster.far = 100;
+
+		this.rightCaster= new THREE.Raycaster();
+		this.rightCaster.near = 0.1; //Pour eviter que le rayCaster return la boule actuelle
+		this.rightCaster.far = 100;
+
 		this.direction = new THREE.Vector3();		
 			
 		this.baseDistance = 11+(this.proprietaire.boule.radius);	
@@ -42,7 +51,18 @@ export default class Queue{
 		this.pivot.add(this.model);
 		this.model.name = name;	
 		this.model.position.set(0,this.baseDistance,0);			
-		this.pivot.rotateZ(Math.PI/2.1)	
+		this.pivot.rotateZ(Math.PI/2.1);
+		let r = this.proprietaire.boule.radius;
+		this.rp = new THREE.Object3D();
+		this.rp.position.set(0,0,r)
+		this.pivot.add(this.rp);
+		this.lp = new THREE.Object3D();
+		this.lp.position.set(0,0,-r)
+		this.pivot.add(this.lp);
+
+		this.lp.rotateZ(-0.075);
+		this.rp.rotateZ(-0.075);
+		
 
 		//Corps principal		
 		let texture = new THREE.TextureLoader().load( require('assets/images/textures/TEST2.jpg') );	
@@ -125,17 +145,41 @@ export default class Queue{
 		this.powerBar.geometry = newGeo;
 		this.powerBar.position.set(0,(powerBarPercentage/2)+this.baseThickness/2,0);		
 		
-		//Update le raycaster pour l'helper de direction
+		//Update LES RAYCASTERS pour l'helper de direction
 		this.direction.set(this.force,0,0);
 		this.direction.applyAxisAngle(new THREE.Vector3(0,1,0),cueAngle);
-		this.rayCaster.set(this.pivot.position, this.direction.clone().normalize())
+
+		let r = this.proprietaire.boule.radius;
+		
+		let centerPoint = this.pivot.position.clone();
+		let leftPoint = new THREE.Vector3();
+		let rightPoint = new THREE.Vector3();
+		this.lp.localToWorld(leftPoint);
+		this.rp.localToWorld(rightPoint);
+
+		this.centerCaster.set(centerPoint, this.direction.clone().normalize())
+		this.leftCaster.set(leftPoint, this.direction.clone().normalize())
+		this.rightCaster.set(rightPoint, this.direction.clone().normalize())
+
 		
 		//Verifie quel objet est retourné par le rayCaster
 		if(this.isActive){
-			let intersectWith = this.rayCaster.intersectObjects(this.proprietaire.controlleur.modele.meshList)[0];			
-			if(intersectWith != undefined){				
-				let distIntersection = intersectWith.distance;
-				this.helper.setLength(distIntersection)		
+			let intersectWithCenter = this.centerCaster.intersectObjects(this.proprietaire.controlleur.modele.meshList)[0];
+			let intersectWithLeft = this.leftCaster.intersectObjects(this.proprietaire.controlleur.modele.meshList)[0];		
+			//console.log(intersectWithLeft)				
+			let intersectWithRight = this.rightCaster.intersectObjects(this.proprietaire.controlleur.modele.meshList)[0];
+			if(intersectWithCenter != undefined && intersectWithLeft != undefined && intersectWithRight != undefined){	
+				let closest = null;
+				let distances = [];						
+				distances.push(intersectWithCenter.distance);
+				if(!intersectWithLeft.object.name.includes("Edge"))
+					distances.push(intersectWithLeft.distance+r);
+				if(!intersectWithRight.object.name.includes("Edge"))
+					distances.push(intersectWithRight.distance+r);				
+							
+				//Retourne le plus petit et set la longueur
+				closest = Math.min(... distances)					
+				this.helper.setLength(closest,this.proprietaire.boule.radius*2,this.proprietaire.boule.radius*2)		
 			}
 		}
 		//Update la position
@@ -170,7 +214,7 @@ export default class Queue{
     *******************************************************************************/
 	fadeUp(){
 		let tick = 0;	
-		this.helper.setLength(this.proprietaire.boule.radius)					
+		this.helper.setLength(this.proprietaire.boule.radius*2)					
 		let animationUp = setInterval(()=>{			
 			tick+=1;
 			this.pivot.position.y += 0.45;			
@@ -190,8 +234,7 @@ export default class Queue{
 			this.pivot.position.y -= 0.45;
 			if(tick == 180){
 				if(this.helper == undefined){
-					this.initHelper(5);
-					
+					this.initHelper(5);					
 				}				
 				this.isActive = true;
 				window.clearInterval(animationDown);
@@ -204,8 +247,29 @@ export default class Queue{
 		let pos = new THREE.Vector3(0,0,0);
 		let coul = this.proprietaire.couleur;
 		let r = this.proprietaire.boule.radius;
-		this.helper = new THREE.ArrowHelper(dir,pos,len,coul,r,r);	
+
+		let frameGeo = new THREE.SphereBufferGeometry(r,12,12)
+		let wireframe = new THREE.WireframeGeometry( frameGeo );
+		let frame = new THREE.LineSegments( wireframe );		
+		frame.material.opacity = 0.65;
+		frame.material.color.set(this.proprietaire.couleur)
+		frame.material.transparent = true;
+		frame.scale.set(-0.5,-0.5,-0.5)	
+		
+		let ghostBall = new THREE.Object3D();
+		ghostBall.position.y = -r/2;
+		ghostBall.position.x = r+0.1;
+		ghostBall.add(frame)
+	
+		
+		this.helper = new THREE.ArrowHelper(dir,pos,len,coul,r*2,r*2);
+		this.helper.cone.visible = true;
+		this.helper.cone.matrixAutoUpdate = true;
+		this.helper.cone.position.y -=r;
+		this.helper.cone.position.x = -r*2 - 0.1;
+		this.helper.cone.add(ghostBall)	
+		console.log(this.helper.cone)
 		this.pivot.add(this.helper)
-		this.helper.rotateZ(-0.08)			
+		this.helper.rotateZ(-0.075)			
 	}
 }

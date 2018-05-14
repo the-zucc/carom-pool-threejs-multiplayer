@@ -1,6 +1,6 @@
 import Boule from '../Objects/Boule';
 import Queue from '../Objects/Queue';
-import * as THREE from 'three'
+import * as THREE from 'three';
 
 export default class Joueur{
 	constructor(nom,score,couleur,position,isActive,c){

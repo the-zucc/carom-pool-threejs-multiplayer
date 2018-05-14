@@ -5,7 +5,6 @@
 * Fichier: GameView.js 
 ************************************************************************************/
 import * as THREE from 'three';
-import { Object3D, Vector3 } from 'three';
 let OrbitControls = require('three-orbit-controls')(THREE);
 
 export default class GameView{

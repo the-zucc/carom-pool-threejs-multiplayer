@@ -65,14 +65,14 @@ export default class GameModel{
 				},2500)		
 			}			
 		}		
-		
+		/*
 		for (let i = -20; i < 20; i+=8) {			
 			for (let j = -40; j < 40; j+=8) {
 				let tmp = new Boule(j,i,null,bouleNeutre);
 				//tmp.velocity.set(Math.random(),0,Math.random());
 				this.boules.push(tmp)				
 			}			
-		}
+		}*/
 		//Le engine physique
 		this.physics = new CaromPhysics(this);				
 	}	
@@ -80,7 +80,7 @@ export default class GameModel{
 	initMeshList(){
 		this.meshList = [];
 		this.meshList.push(this.table.topEdge.model)
-		console.log(this.table.topEdge.model)
+		
 		this.meshList.push(this.table.bottomEdge.model)
 		this.meshList.push(this.table.leftEdge.model)
 		this.meshList.push(this.table.rightEdge.model)
@@ -185,9 +185,10 @@ export default class GameModel{
 			}
 			//Compter le nombre de boules stationnaires pour arreter le tour
 			for (let i = 0; i < this.boules.length; i++) {
-				const v = this.boules[i].velocity;
-				if(v.equals(this.physics.isStationary))
-					nbStationary += 1;				
+				const ball = this.boules[i];
+				if(ball.velocity.equals(this.physics.isStationary)){
+					nbStationary += 1;	
+				}
 			}
 
 			//FIN DU TOUR ******************************************************************************
@@ -197,7 +198,7 @@ export default class GameModel{
 					this.turnIsValid = false;
 
 				/*******IF DEBUGGING*******/
-				if(this.controlleur.isDebugging){
+				if(this.controlleur.isDebugging){					
 					let endLog = "[ DEBUG ]";
 					endLog+="  TOUR : "+this.controlleur.currentTurn;
 					endLog+="  ||  JOUEUR : "+this.controlleur.currentPlayer.nom;					

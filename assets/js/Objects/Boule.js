@@ -4,7 +4,7 @@
 * Auteur : Kevin Mwanangwa
 * Fichier: Boule.js 
 ************************************************************************************/
-import * as THREE from 'three'
+import * as THREE from 'three';
 
 export default class Boule{
 	constructor(x,z,prop,coul){
@@ -15,7 +15,8 @@ export default class Boule{
 		this.proprietaire = prop;
 		this.couleur = coul;	
 		this.mass = 1;		
-		this.velocity = new THREE.Vector3(0,0,0);		
+		this.velocity = new THREE.Vector3(0,0,0);	
+		this.lastCollision = new THREE.Vector3(this.x,this.y,this.z);					
 		
 		//Si pas de proprio, boule neutre
 		if(this.proprietaire != undefined)
