@@ -23,8 +23,8 @@
           </v-card-media>
           <v-card-title primary-title>
             <v-flex xs12 text-xs-center>
-              <h3 class="headline">titre</h3>
-               <div xs12 text-xs-center>desc</div>
+              <h3 class="headline">Carom {{item.type+1}} bande(s)</h3>
+               <div xs12 text-xs-center></div>
             </v-flex>
           </v-card-title>
           <v-card-actions >
