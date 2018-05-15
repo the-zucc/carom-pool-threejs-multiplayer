@@ -9,7 +9,7 @@ export default class CaromPhysics{
     constructor(modele){  
         this.isStationary = new THREE.Vector3(0,0,0);
         this.lowestSpeed = 0.005;
-        this.friction = 0.012;
+        this.friction = 0.012; 
         this.cushionAbsorbtion = 0.05;
         this.modele = modele;      
         this.trails = []; 
@@ -195,7 +195,6 @@ export default class CaromPhysics{
         }        
           
         return hit;
-
     }    
     
     /*******************************************************************************
@@ -219,7 +218,21 @@ export default class CaromPhysics{
     }
 
     clearTrails(){
+<<<<<<< HEAD
 
+=======
+        let baseTime = 100;
+        let delta = 100;
+        for (let i = 0; i < this.trails.length; i++) {
+            const trail = this.trails[i];
+            setTimeout( ()=>{
+                this.modele.controlleur.vue.scene.remove(trail);                
+            }, baseTime)
+            baseTime += delta;
+        }
+
+        this.trails = []
+>>>>>>> 1cb5c3ab7c6aba047ff8172fbb113e55059fef99
     }
 
     /*******************************************************************************

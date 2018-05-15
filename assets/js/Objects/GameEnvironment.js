@@ -18,8 +18,8 @@ export default class GameEnvironment{
     *******************************************************************************/
     createModel(name){    
         //Plancher
-        let floorTexture = new THREE.TextureLoader().load( require('assets/images/textures/TEST4.jpg'));
-        floorTexture.repeat.set(8,8);
+        let floorTexture = new THREE.TextureLoader().load( require('assets/images/textures/RoomFloor.jpg'));
+        floorTexture.repeat.set(10,10);
         floorTexture.wrapS = THREE.RepeatWrapping;
         floorTexture.wrapT = THREE.RepeatWrapping;                
         let floorMaterial = new THREE.MeshPhongMaterial( { map:floorTexture });  
@@ -32,14 +32,14 @@ export default class GameEnvironment{
         this.model.castShadow = true;
         this.model.receiveShadow = true;  
 
-        let table1 = new CaromTable(0,0,110);
-        let table2 = new CaromTable(0,0,-110);
-        let table3 = new CaromTable(-150,0,110);
-        let table4 = new CaromTable(150,0,110);
-        let table5 = new CaromTable(150,0,-110);
-        let table6 = new CaromTable(-150,0,-110);
-        let table7 = new CaromTable(150,0,0);
-        let table8 = new CaromTable(-150,0,0);
+        let table1 = new CaromTable(0,0,90);
+        let table2 = new CaromTable(0,0,-90);
+        let table3 = new CaromTable(-135,0,90);
+        let table4 = new CaromTable(135,0,90);
+        let table5 = new CaromTable(135,0,-90);
+        let table6 = new CaromTable(-135,0,-90);
+        let table7 = new CaromTable(135,0,0);
+        let table8 = new CaromTable(-135,0,0);
         
         this.model.add(table1.model);
         this.model.add(table2.model);
@@ -58,14 +58,8 @@ export default class GameEnvironment{
         let box = new THREE.BoxGeometry(400,200,400)
         let mat = new THREE.MeshPhongMaterial({map:wallTexture, side:THREE.BackSide});
         let wall = new THREE.Mesh(box,mat);
-        //wall.position.y = -15;
+        wall.position.y = 75;
         wall.receiveShadow = true;
-        this.model.add(wall);
-
-        let kr = new THREE.SphereBufferGeometry(350,40,20);
-        let kt = new THREE.TextureLoader().load( require('assets/images/lol.jpg'));
-        let stage = new THREE.MeshPhongMaterial({map:kt, side:THREE.BackSide});
-        let sp = new THREE.Mesh(kr,stage)
-        //this.model.add(sp)
+        this.model.add(wall);        
     }
 }

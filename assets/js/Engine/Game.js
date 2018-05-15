@@ -8,42 +8,21 @@ import GameModel from './GameModel';
 import GameView from './GameView';
 import Stats from '../Libs/Stats';
 /*********************************************************************
-* Variables
+* Class : CaromController
 *********************************************************************/
-let controller = null;
-/*********************************************************************
-* Initialisation du jeu
-*********************************************************************/
-function startGame(gameVariant,me,playerList){	
-	let playerListTMP = '{"joueurs":[{"nom":"Kevin Mw","score":"420" },{"nom":"JM Deschamps","score":"1337"}]}';
-	let Json = JSON.parse(playerListTMP);	
-	controller = new Controller("Kevin Mw",gameVariant,Json);	
-
-	startGameLoop();	
-}
-
-/*********************************************************************
-* GameLoop
-*********************************************************************/
-function startGameLoop(){	
-	controller.tick();
-	
-	//Callback function
-	requestAnimationFrame(startGameLoop);	
-}
-
-/*********************************************************************
-* Class : Controller
-*********************************************************************/
-class Controller{
-	constructor(me,gameVariant,playerList){	
+export default class CaromController{
+	constructor(me,partieCourante){	
+		let playerList = partieCourante.joueurs;
+		let gameVariant = partieCourante.type;
+		this.partieCourante = partieCourante;
+		this.currentTurn = 1;
 		// Debug
 		this.isDebugging = false;
 		this.domContainer = document.getElementById("carom-container");
 		this.stats = new Stats();
 		this.stats.showPanel( 1 );
 		document.onkeypress = (e)=>{
-			//D : Toggle le debugging
+			//D : Toggle le debugging			
 			if(e.which == 100){
 				this.isDebugging = !this.isDebugging;
 				if(this.isDebugging)
@@ -51,6 +30,13 @@ class Controller{
 				else
 					this.domContainer.removeChild(this.stats.dom)
 			}
+			
+				this.remotePlayer.shot = true;
+				setTimeout(()=>{
+					this.remotePlayer.shot = false;
+				},1000);	
+			
+			
 		}
 		
 		this.me = me; //Nom de l'usager local	
@@ -60,7 +46,7 @@ class Controller{
 		this.vue = new GameView(this);
 		this.modele = new GameModel(this,gameVariant,playerList);
 		this.vue.initGameObjets();
-		this.currentTurn = 1;
+		
 
 		//Input usager
 		this.startingX = null;
@@ -68,6 +54,8 @@ class Controller{
 		this.distanceDown = null;
 		this.maxDistance = 200;
 		this.justLaunched = false;	
+
+		
 		//Start powerBar
 		document.onmousedown = (e)=>{
 			//Si right click down
@@ -95,6 +83,16 @@ class Controller{
 				},100);					
 			}
 		}
+
+		this.remotePlayer = {
+			force : 0.05,
+			angle : Math.PI,
+			shot : false
+		}//null; //Objet JSON qui contiendra les info de l'autre joueur		
+
+		this.sendCoupToServeur = null; //Envoyer coup local au serveur
+		this.sendCueInfo = null; //Envoyer les parametres de position locaux au serveur
+		this.changerTourNiveauServeur = null;
 	}
 
 	/*********************************************************************
@@ -110,6 +108,8 @@ class Controller{
 	* Gestion de fin de tour
 	*********************************************************************/
 	endTurn(scored){
+		this.modele.board.caroms += 1; //QUick fix
+		this.modele.board.updateScoreModel();
 		//Si reussi ****************************************
 		if(scored){
 			//Incrementer score
@@ -122,13 +122,14 @@ class Controller{
 			this.currentPlayer.reset();
 			setTimeout(()=>{
 				if(this.currentPlayer.nom == this.me)
-					this.changeCameraFocus(this.currentPlayer.boule);				
+					this.changeCameraFocus(this.currentPlayer.boule);
 			},2000);			
 		}
 		//Sinon ****************************************
 		else{
 			this.vue.hasNotScored();
 			this.nextPlayer();
+			this.changerTourNiveauServeur();
 		}		
 
 		//Reset Modele
@@ -164,14 +165,14 @@ class Controller{
 
 		//Change spotlight, le pointe vers l'autre joueur
 		this.vue.rotateSpotLight();
+		this.changerTourNiveauServeur();
 	}
-
 	/*********************************************************************
 	* Recuperer l'input de force du joueur actuel
 	*********************************************************************/
 	getForceInput(){
 		//Si c'est notre tour
-		if(true){//this.currentPlayer.nom == this.me){
+		if(this.currentPlayer.nom == this.me){
 			if(this.distanceDown != null){
 				if(this.distanceDown > 0 && this.distanceDown < this.maxDistance){
 					let percentage = this.distanceDown/this.maxDistance;
@@ -183,8 +184,9 @@ class Controller{
 			else return 0.001;
 		}
 		//Sinon, recuperer infos du serveur pour le deuxieme joueur
-		else 
-			return 0.001;
+		else {
+			return this.remotePlayer.force;
+		}			
 	}
 
 	/*********************************************************************
@@ -192,17 +194,29 @@ class Controller{
 	*********************************************************************/
 	justShot(){
 		//Si c'est notre tour
-		if(true){//this.currentPlayer.nom == this.me){
+		if(this.currentPlayer.nom == this.me){
+			let force = this.getForceInput();
+			let direction = this.getCueAngle();
+			let idPartie = this.partieCourante._id;
 			if(this.justLaunched){
 				this.justLaunched = false;
+				//Envoyer params locaux au serveur
+				
+				this.sendCoupToServeur({force:force, angle:direction, shot:true}, this.currentPlayer.nom);
+				//setTimeout(()=>this.sendCoupToServeur({angle:0,force:0,shot:false}, this.partieCourante.joueurs[currIdx].nom), 60)
 				return true;
 			}
-			else
+			else{
+				this.sendCoupToServeur({force:force, angle:direction, shot:false}, this.currentPlayer.nom);
 				return false;
+			}
+				
+
 		}
 		//Sinon, recuperer infos du serveur pour le deuxieme joueur
-		else 
-			return false;
+		else {
+			return this.remotePlayer.shot;
+		}			
 	}
 
 	/*********************************************************************
@@ -224,12 +238,13 @@ class Controller{
 	*********************************************************************/
 	getCueAngle(){
 		//Si c'est notre tour
-		if(true){//this.currentPlayer.nom == this.me){	
-			return this.vue.cameraControls.getAzimuthalAngle() + Math.PI/2;
+		if(this.currentPlayer.nom == this.me){
+			let currAngle = this.vue.cameraControls.getAzimuthalAngle() + Math.PI/2
+			return currAngle;
 		}
 		//Sinon, recuperer infos du serveur pour le deuxieme joueur
 		else{
-			return 0;
+			return this.remotePlayer.angle;
 		}
 	}
 
@@ -248,14 +263,44 @@ class Controller{
 		if(this.isDebugging){this.stats.begin();}
 		
 		//Update game	
+		//console.log(this.getCoups);
 		this.modele.update()
 		this.vue.renderScene()
 		
 		if(this.isDebugging){this.stats.end();}
 	}
-}
+	/*********************************************************************
+	* Initialisation du jeu
+	*********************************************************************/
+	startGame(gameVariant,me,playerList){	
+		this.gameLoop();
+	}
 
-export default {
-	startGame,
-	startGameLoop
+	/*********************************************************************
+	* GameLoop
+	*********************************************************************/
+	gameLoop(){
+		if(this.modele.joueurs.length == 0 && (this.partieCourante.joueurs[0] != undefined && this.partieCourante.joueurs[1] != undefined)){
+			this.modele.initPlayers(this.partieCourante.joueurs);
+			this.vue.initPlayers(this.modele);
+		}
+		
+		let currIdx = this.partieCourante.joueurCourant;
+		//console.log("Current : "+currIdx)
+		if(this.modele.joueurs.length > 0){
+			if(this.currentPlayer == null){
+				this.currentPlayer = this.modele.joueurs[currIdx]
+			}
+			else if(this.modele.joueurs[currIdx].nom != this.currentPlayer.nom){
+				this.nextPlayer();
+			}
+			this.remotePlayer = this.partieCourante.joueurs[currIdx].coup;
+		}
+
+		//this.remotePlayer.angle += 0.01;
+		//this.remotePlayer.force = Math.random()*0.9;
+		this.tick();
+		//Callback function
+		requestAnimationFrame(()=>this.gameLoop());
+	}
 }

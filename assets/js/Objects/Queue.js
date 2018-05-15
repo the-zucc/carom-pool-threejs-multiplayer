@@ -61,11 +61,10 @@ export default class Queue{
 		this.pivot.add(this.lp);
 
 		this.lp.rotateZ(-0.075);
-		this.rp.rotateZ(-0.075);
-		
+		this.rp.rotateZ(-0.075);		
 
 		//Corps principal		
-		let texture = new THREE.TextureLoader().load( require('assets/images/textures/TEST2.jpg') );	
+		let texture = new THREE.TextureLoader().load( require('assets/images/textures/SurfaceQueue.jpg') );	
 		texture.wrapS = THREE.RepeatWrapping;
 		texture.wrapT = THREE.RepeatWrapping;
 		let geometry = new THREE.CylinderBufferGeometry(0.35,0.2,20, 15 , 15);
@@ -184,10 +183,12 @@ export default class Queue{
 		}
 		//Update la position
 		this.model.position.y = this.baseDistance+(this.force*1.2)
-
+	
+	
 		//Verifie si le joueur a tiré et que la force n'est pas nulle
 		if(justShot && percentage != 0.001 && this.isActive)
 			this.hitBall();		
+		
 	}
 
 	/*******************************************************************************

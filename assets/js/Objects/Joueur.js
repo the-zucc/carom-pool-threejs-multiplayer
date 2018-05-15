@@ -3,11 +3,12 @@ import Queue from '../Objects/Queue';
 import * as THREE from 'three';
 
 export default class Joueur{
-	constructor(nom,score,couleur,position,isActive,c){
+	constructor(nom,score,couleur,position,isActive,c,txt){
 		this.controlleur = c;
 		this.nom = nom;		
-		this.caroms = 0;
+		this.caroms = score;
 		this.isActive = isActive;
+		this.txt = txt;
 		
 		this.bandesTouchees = [];
 		this.boulesTouchees = [];	
@@ -31,7 +32,7 @@ export default class Joueur{
 				curveSegments: 12				
 			} );
 
-			scoreText = new THREE.TextGeometry( "Score :", {
+			scoreText = new THREE.TextGeometry( this.txt , {
 				font: this.font,
 				size: 5,
 				height: 1,
@@ -50,6 +51,13 @@ export default class Joueur{
 			if(pos != 0){
 				this.model.rotation.y = Math.PI;
 			}	
+
+			//QUiCK FIX
+			if(pos == -4000){
+				this.nameModel.position.set(-20,26,-120);
+				this.model.rotation.y = Math.PI/2;
+				
+			}
 			
 			this.updateScoreModel();
 		} );
