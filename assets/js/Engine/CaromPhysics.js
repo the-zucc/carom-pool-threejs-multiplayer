@@ -218,9 +218,6 @@ export default class CaromPhysics{
     }
 
     clearTrails(){
-<<<<<<< HEAD
-
-=======
         let baseTime = 100;
         let delta = 100;
         for (let i = 0; i < this.trails.length; i++) {
@@ -230,9 +227,8 @@ export default class CaromPhysics{
             }, baseTime)
             baseTime += delta;
         }
-
+        
         this.trails = []
->>>>>>> 1cb5c3ab7c6aba047ff8172fbb113e55059fef99
     }
 
     /*******************************************************************************
