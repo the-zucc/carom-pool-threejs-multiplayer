@@ -106,7 +106,7 @@ export default class GameModel{
 		/**
 		 * Updates le joueur actif
 		 *******************************************************/
-		if(this.controlleur.currentPlayer != null && this.controlleur.currentPlayer.isActive){					
+		if(this.controlleur.currentPlayer != null && this.controlleur.currentPlayer.queue.isActive){					
 			this.controlleur.currentPlayer.update()
 		}			
 		
