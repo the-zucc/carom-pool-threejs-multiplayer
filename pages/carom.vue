@@ -13,7 +13,7 @@ export default {
 		let partieId = this.$route.query.partie;
 		let partie = this.parties({query:{_id:partieId}}).data[0];
 		console.log("utilisateur:");
-		//console.log(partie)
+		console.log(partie)
 		console.log(this.utilisateurCourant)
 		if(partie.joueurs[0] == undefined){
 			let nomUser = this.utilisateurCourant.name;

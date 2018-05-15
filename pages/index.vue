@@ -30,6 +30,7 @@
           <v-card-actions >
              <v-flex xs12 text-xs-center>
                <v-btn color="orange" v-on:click="joinPartie(item)">Sélectionner</v-btn>
+               <!--v-btn color="orange" v-on:click="deletePartie(item)">Supprimer</v-btn-->
              </v-flex>
           </v-card-actions>
         </v-card>
@@ -105,9 +106,12 @@ export default {
     },
     ...mapActions("parties", {
       findParties: "find",
-      createPartie: "create"
+      createPartie: "create",
+      deletThis: "remove"
     }),
-    
+    deletePartie(partie){
+      this.deletThis(partie._id);
+    }
   },
   created() {
     this.findParties({query: {}});
