@@ -227,7 +227,7 @@ export default class CaromPhysics{
             }, baseTime)
             baseTime += delta;
         }
-
+        
         this.trails = []
     }
 

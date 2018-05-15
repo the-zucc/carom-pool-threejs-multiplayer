@@ -30,13 +30,6 @@ export default class CaromController{
 				else
 					this.domContainer.removeChild(this.stats.dom)
 			}
-			
-				this.remotePlayer.shot = true;
-				setTimeout(()=>{
-					this.remotePlayer.shot = false;
-				},1000);	
-			
-			
 		}
 		
 		this.me = me; //Nom de l'usager local	
@@ -89,7 +82,7 @@ export default class CaromController{
 			angle : Math.PI,
 			shot : false
 		}//null; //Objet JSON qui contiendra les info de l'autre joueur		
-
+		this.aEnvoye = false;
 		this.sendCoupToServeur = null; //Envoyer coup local au serveur
 		this.sendCueInfo = null; //Envoyer les parametres de position locaux au serveur
 		this.changerTourNiveauServeur = null;
@@ -172,7 +165,7 @@ export default class CaromController{
 	*********************************************************************/
 	getForceInput(){
 		//Si c'est notre tour
-		if(this.currentPlayer.nom == this.me){
+		if(this.currentPlayer.nom == this.me && this.currentPlayer.isActive){
 			if(this.distanceDown != null){
 				if(this.distanceDown > 0 && this.distanceDown < this.maxDistance){
 					let percentage = this.distanceDown/this.maxDistance;
@@ -194,15 +187,16 @@ export default class CaromController{
 	*********************************************************************/
 	justShot(){
 		//Si c'est notre tour
-		if(this.currentPlayer.nom == this.me){
+		if(this.currentPlayer.nom == this.me && this.currentPlayer.isActive){
 			let force = this.getForceInput();
 			let direction = this.getCueAngle();
 			let idPartie = this.partieCourante._id;
 			if(this.justLaunched){
 				this.justLaunched = false;
 				//Envoyer params locaux au serveur
-				
-				this.sendCoupToServeur({force:force, angle:direction, shot:true}, this.currentPlayer.nom);
+				if(!this.aEnvoye){
+					this.sendCoupToServeur({force:force, angle:direction, shot:true}, this.currentPlayer.nom);
+				}
 				//setTimeout(()=>this.sendCoupToServeur({angle:0,force:0,shot:false}, this.partieCourante.joueurs[currIdx].nom), 60)
 				return true;
 			}
@@ -238,7 +232,7 @@ export default class CaromController{
 	*********************************************************************/
 	getCueAngle(){
 		//Si c'est notre tour
-		if(this.currentPlayer.nom == this.me){
+		if(this.currentPlayer.nom == this.me && this.currentPlayer.isActive){
 			let currAngle = this.vue.cameraControls.getAzimuthalAngle() + Math.PI/2
 			return currAngle;
 		}
@@ -283,6 +277,7 @@ export default class CaromController{
 		if(this.modele.joueurs.length == 0 && (this.partieCourante.joueurs[0] != undefined && this.partieCourante.joueurs[1] != undefined)){
 			this.modele.initPlayers(this.partieCourante.joueurs);
 			this.vue.initPlayers(this.modele);
+			this.modele.initMeshList();
 		}
 		
 		let currIdx = this.partieCourante.joueurCourant;
