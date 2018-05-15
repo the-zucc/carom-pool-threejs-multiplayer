@@ -38,14 +38,13 @@
         <v-btn slot="activator" color="blue darken-2" dark fab hover v-model="fab" >
         <v-icon>add</v-icon>
         <v-icon>close</v-icon></v-btn>
-
-      <v-chip color="red" text-color="white" v-on:click="createPartie({type:2, joueurs:[undefined, undefined]})">
+      <v-chip color="red" text-color="white" v-on:click="createPartie({type:2, joueurs:[undefined, undefined], joueurCourant:0})">
         <v-avatar><v-icon class="red darken-4">add</v-icon></v-avatar>Carom 3 bandes
       </v-chip>
-      <v-chip color="orange" text-color="white" v-on:click="createPartie({type:1, joueurs:[undefined, undefined]})">
+      <v-chip color="orange" text-color="white" v-on:click="createPartie({type:1, joueurs:[undefined, undefined], joueurCourant:0})">
         <v-avatar><v-icon class="orange darken-4">add</v-icon></v-avatar>Carom 1 bande
       </v-chip>
-      <v-chip color="green" text-color="white" v-on:click="createPartie({type:0, joueurs:[undefined, undefined]})">
+      <v-chip color="green" text-color="white" v-on:click="createPartie({type:0, joueurs:[undefined, undefined], joueurCourant:0})">
         <v-avatar><v-icon class="green darken-4" >add</v-icon></v-avatar>Carom Libre
       </v-chip>
     </v-speed-dial>
