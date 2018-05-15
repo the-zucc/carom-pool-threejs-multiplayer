@@ -5,6 +5,7 @@ module.exports = function (app) {
   const dbPath = app.get('nedb');
   const Model = new NeDB({
     filename: path.join(dbPath, 'parties.db'),
+    inMemoryOnly: true,
     autoload: true
   });
 
