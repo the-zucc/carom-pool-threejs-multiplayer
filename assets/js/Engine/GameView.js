@@ -42,7 +42,7 @@ export default class GameView{
 	}
 
 	/*******************************************************************************
-    * Initialises les modeles 3D du modele
+    * Initialise les modeles 3D du modele
     *******************************************************************************/
 	initGameObjets(){
 		let modele = this.controller.modele;
@@ -52,6 +52,9 @@ export default class GameView{
 		this.scene.add(modele.board.model)		
 	}
 
+	/*******************************************************************************
+    * Initialise les modeles 3D des joueurs
+    *******************************************************************************/
 	initPlayers(modele){
 		for (let i = 0; i < modele.boules.length; i++) {
 			const element = modele.boules[i].model;
@@ -142,8 +145,6 @@ export default class GameView{
 		cameraTarget.x *= 0.65;
 		cameraTarget.y = 0; //Orbit control va limiter le zoom
 		cameraTarget.z *= 0.65;
-		
-		
 					
 		let tick = 0;
 		let animation = setInterval(()=>{		

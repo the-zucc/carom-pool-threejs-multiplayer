@@ -18,6 +18,9 @@ export default class Joueur{
 		this.createModel(position[1])		
 	}
 
+	/*******************************************************************************
+    * Initialisation du modele du joueur
+    *******************************************************************************/
 	createModel(pos){				
 		let loader = new THREE.FontLoader();
 		this.material = new THREE.MeshPhongMaterial({ color:this.couleur ,  transparent: false,  opacity: 1  , shininess: 100});
@@ -52,17 +55,21 @@ export default class Joueur{
 				this.model.rotation.y = Math.PI;
 			}	
 
-			//QUiCK FIX
+			//QuiCK FIX pour afficher le scoreBoard
 			if(pos == -4000){
 				this.nameModel.position.set(-20,26,-120);
 				this.model.rotation.y = Math.PI/2;
 				
 			}
 			
+			//Appel initial
 			this.updateScoreModel();
 		} );
 	}
 
+	/*******************************************************************************
+    * Update le modele 3D du score
+    *******************************************************************************/
 	updateScoreModel(){
 		let scoreGeo = new THREE.TextGeometry( this.caroms, {
 			font: this.font,
@@ -83,6 +90,9 @@ export default class Joueur{
 		}
 	}
 
+	/*******************************************************************************
+    * Update sa queue
+    *******************************************************************************/
 	update(){
 		let cueAngle = this.controlleur.getCueAngle();	
 		let barRotation = this.controlleur.getPowerBarAngle();
@@ -91,21 +101,16 @@ export default class Joueur{
 		this.queue.update(cueAngle,barRotation,percentage,justShot);
 	}
 
+	/*******************************************************************************
+    * Ajouter une collision de bande
+    *******************************************************************************/
 	hasHitEdge(edge){		
 		this.bandesTouchees.push(edge)		
-	}
+	}	
 
-	reset(){
-		this.bandesTouchees = [];
-		this.boulesTouchees = [];
-		//Aligne la queue au dessus de la boule du joueur		
-		this.queue.pivot.position.x = this.boule.model.position.x;
-		this.queue.pivot.position.z = this.boule.model.position.z;
-		
-		//Animation
-		this.queue.fadeDown();
-	}
-
+	/*******************************************************************************
+    * Ajouter une collision de balle
+    *******************************************************************************/
 	hasHitBall(ball){
 		let name = ball.model.name;
 		//Si balle pas encore touchee
@@ -116,5 +121,19 @@ export default class Joueur{
 		else{
 			return true;
 		}
+	}
+
+	/*******************************************************************************
+    * Reset
+    *******************************************************************************/
+	reset(){
+		this.bandesTouchees = [];
+		this.boulesTouchees = [];
+		//Aligne la queue au dessus de la boule du joueur		
+		this.queue.pivot.position.x = this.boule.model.position.x;
+		this.queue.pivot.position.z = this.boule.model.position.z;
+		
+		//Animation
+		this.queue.fadeDown();
 	}
 }

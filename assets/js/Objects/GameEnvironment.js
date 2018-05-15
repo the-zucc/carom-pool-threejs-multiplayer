@@ -32,6 +32,7 @@ export default class GameEnvironment{
         this.model.castShadow = true;
         this.model.receiveShadow = true;  
 
+        //Les tables décoratives
         let table1 = new CaromTable(0,0,90);
         let table2 = new CaromTable(0,0,-90);
         let table3 = new CaromTable(-135,0,90);
@@ -39,8 +40,7 @@ export default class GameEnvironment{
         let table5 = new CaromTable(135,0,-90);
         let table6 = new CaromTable(-135,0,-90);
         let table7 = new CaromTable(135,0,0);
-        let table8 = new CaromTable(-135,0,0);
-        
+        let table8 = new CaromTable(-135,0,0);        
         this.model.add(table1.model);
         this.model.add(table2.model);
         this.model.add(table3.model);
@@ -50,7 +50,7 @@ export default class GameEnvironment{
         this.model.add(table7.model);
         this.model.add(table8.model);
 
-        
+        //Les murs de la piece
         let wallTexture = new THREE.TextureLoader().load( require('assets/images/textures/RoomWall.jpg'));
         wallTexture.wrapS = THREE.RepeatWrapping;
         wallTexture.wrapT = THREE.RepeatWrapping;  

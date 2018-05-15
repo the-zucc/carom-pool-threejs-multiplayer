@@ -243,6 +243,9 @@ export default class Queue{
 		},17)		
 	}
 
+	/*******************************************************************************
+    * Initialise l'aide de trajectoire
+    *******************************************************************************/
 	initHelper(len){
 		let dir = new THREE.Vector3(0,-1,0);
 		let pos = new THREE.Vector3(0,0,0);

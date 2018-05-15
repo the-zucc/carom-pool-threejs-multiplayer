@@ -42,22 +42,20 @@ export default class GameModel{
 		if (this.nbBandesMin == 1) {mode = "1 Bande"}
 		if (this.nbBandesMin == 3) {mode = "3 Bandes"}
 		this.board = new Joueur(mode,this.controlleur.currentTurn,0x42e5f4,[-20,-4000],false,this.controlleur,"Tour : ")
-		/*
-		for (let i = -20; i < 20; i+=8) {			
-			for (let j = -40; j < 40; j+=8) {
-				let tmp = new Boule(j,i,null,bouleNeutre);
-				//tmp.velocity.set(Math.random(),0,Math.random());
-				this.boules.push(tmp)				
-			}			
-		}*/
+		
 		//Le engine physique
 		this.physics = new CaromPhysics(this);				
 	}	
 
+	/*******************************************************************************
+    * Initialisation des joueurs
+    *******************************************************************************/
 	initPlayers(playerList){
+		//Couleurs
 		let bouleJoueur1 = 0xcc9900,
 			bouleJoueur2 = 0xbfbfbf;
-		//Init players
+		
+			//Init players
 		for(let i = 0; i<playerList.length; i++) {
 			const actuel = playerList[i];			
 			let couleur = null; 
@@ -73,6 +71,7 @@ export default class GameModel{
 				position = [-20,5];
 				isActive = false;
 			}
+			//Ajouter joueur à la liste
 			this.joueurs.push(new Joueur(actuel.nom,0,couleur,position,isActive,this.controlleur,"Score : "));
 			this.boules.push(this.joueurs[i].boule)
 
@@ -86,10 +85,13 @@ export default class GameModel{
 		}	
 	}
 
+	/*******************************************************************************
+    * Initialisation de la liste des MESH 3D pour le raycasting
+    *******************************************************************************/
 	initMeshList(){
+		//Les 4 bandes et les boules
 		this.meshList = [];
-		this.meshList.push(this.table.topEdge.model)
-		
+		this.meshList.push(this.table.topEdge.model)		
 		this.meshList.push(this.table.bottomEdge.model)
 		this.meshList.push(this.table.leftEdge.model)
 		this.meshList.push(this.table.rightEdge.model)
@@ -186,12 +188,12 @@ export default class GameModel{
 						}
 						edge.hasBeenTouched();
 					}
-
 					
 					//Quitter la boucle
 					break;
 				}
 			}
+			
 			//Compter le nombre de boules stationnaires pour arreter le tour
 			for (let i = 0; i < this.boules.length; i++) {
 				const ball = this.boules[i];

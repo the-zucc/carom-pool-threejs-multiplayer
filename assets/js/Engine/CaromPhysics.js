@@ -8,11 +8,11 @@ import * as THREE from 'three';
 export default class CaromPhysics{
     constructor(modele){  
         this.isStationary = new THREE.Vector3(0,0,0);
-        this.lowestSpeed = 0.005;
-        this.friction = 0.012; 
-        this.cushionAbsorbtion = 0.05;
-        this.modele = modele;      
-        this.trails = []; 
+        this.lowestSpeed = 0.005; //Vitesse minimum avant de clamper
+        this.friction = 0.012; //Perte de mouvement à chaque déplacement
+        this.cushionAbsorbtion = 0.05; //Perte de mouvement àpres collision avec une bande
+        this.modele = modele;  //Reference au modele parent    
+        this.trails = []; //Tableau qui contient les trainées/trajectoires
     }
 
     /*******************************************************************************
@@ -32,7 +32,7 @@ export default class CaromPhysics{
                     //Predire les collision entre les deux boules actuelles
                     let t = this.getCollisionTime(ball1,ball2);
 
-                    //Si il y a une collision future ET elle se produira pendant le frame actuel
+                    //Si il y a une collision future ET elle se produira pendant le frame actuel ( <= 1)
                     if (t !== null && t >= 0 && t <= 1) {                        
                         //Ajouter collision a la liste
                         currentFrameCollisions.push({
@@ -198,7 +198,7 @@ export default class CaromPhysics{
     }    
     
     /*******************************************************************************
-    * Montre rebonds et forces des impact, methode de debbugging
+    * Montre rebonds et forces des impact
     *******************************************************************************/
     showBounce(ball){   
         this.showTrail(ball);       
@@ -206,18 +206,23 @@ export default class CaromPhysics{
         ball.trail = null;
     }
 
+    /*******************************************************************************
+    * Montrer les trainées et trajectoires
+    *******************************************************************************/
     showTrail(ball){
-        //Update le trail
+        //Si le trail actuel est null, init
         if(ball.trail == undefined || ball.trail == null){
             ball.trail = new THREE.ArrowHelper(ball.velocity.clone(),ball.model.position.clone(),0.1,ball.couleur,1,1);    
             this.trails.push(ball.trail)   
             this.modele.controlleur.vue.scene.add(ball.trail)
         }
+        //Update le trail actuel en fonction de la distance voyagée depuis la dernière collision
         let distance = ball.lastCollision.clone().distanceTo(ball.model.position)
         ball.trail.setLength(distance,1,1);        
     }
 
     clearTrails(){
+        //Effacer tous les trails en séquence à la fin du tour
         let baseTime = 100;
         let delta = 100;
         for (let i = 0; i < this.trails.length; i++) {
@@ -227,7 +232,6 @@ export default class CaromPhysics{
             }, baseTime)
             baseTime += delta;
         }
-        
         this.trails = []
     }
 

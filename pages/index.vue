@@ -23,7 +23,7 @@
           </v-card-media>
           <v-card-title primary-title>
             <v-flex xs12 text-xs-center>
-              <h3 class="headline">Carom {{item.type+1}} bande(s)</h3>
+              <h3 class="headline">Carom {{item.type}} bande(s)</h3>
                <div xs12 text-xs-center></div>
             </v-flex>
           </v-card-title>
@@ -39,7 +39,7 @@
         <v-btn slot="activator" color="blue darken-2" dark fab hover v-model="fab" >
         <v-icon>add</v-icon>
         <v-icon>close</v-icon></v-btn>
-      <v-chip color="red" text-color="white" v-on:click="createPartie({type:2, joueurs:[undefined, undefined], joueurCourant:0})">
+      <v-chip color="red" text-color="white" v-on:click="createPartie({type:3, joueurs:[undefined, undefined], joueurCourant:0})">
         <v-avatar><v-icon class="red darken-4">add</v-icon></v-avatar>Carom 3 bandes
       </v-chip>
       <v-chip color="orange" text-color="white" v-on:click="createPartie({type:1, joueurs:[undefined, undefined], joueurCourant:0})">
