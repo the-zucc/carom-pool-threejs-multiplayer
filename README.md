@@ -1,4 +1,4 @@
-# test-feathers
+# Carom-Pool
 
 > Nuxt.js + Vuetify.js project
 
